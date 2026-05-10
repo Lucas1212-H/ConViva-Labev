@@ -1,185 +1,95 @@
 <template>
-	<div class="login-page">
-		<header class="top-bar">
-			<h1 class="brand">Faunaaqui!</h1>
-		</header>
-
-		<main class="login-wrapper">
-			<section class="illustration-card" aria-hidden="true">
-				<div class="blob"></div>
-				<img src="../assets/images/map.png" alt="Mapa da regiao" class="animal-image">
-			</section>
-
-			<section class="form-card">
-				<h2 class="form-title">Login Organizacional</h2>
-
-				<form class="login-form" @submit.prevent>
-					<label for="email">Email</label>
-					<input id="email" type="email" autocomplete="email">
-
-					<label for="password">Senha</label>
-					<input id="password" type="password" autocomplete="current-password">
-
-					<button type="submit" class="submit-btn">Entrar</button>
-
-					<div class="links-row">
-						<span>Nao possui conta?</span>
-						<a href="#">Cadastre Aqui</a>
-						<a href="#">Esqueci minha senha</a>
-					</div>
-				</form>
-			</section>
-		</main>
-	</div>
+  <div class="login-page d-flex align-items-center justify-content-center">
+    <div class="container">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-md-5 d-none d-md-block text-center">
+          <img src="@/assets/images/capivara-login.png" alt="Capivara" class="img-fluid hero-img">
+        </div>
+        
+        <div class="col-md-6">
+          <div class="auth-card shadow-lg p-5">
+            <h2 class="auth-title mb-4">Login Organizacional</h2>
+            
+            <form @submit.prevent="handleLogin">
+              <div class="mb-4">
+                <label class="form-label">Email</label>
+                <input type="email" v-model="email" class="form-control custom-input" placeholder="seu@email.com" required>
+              </div>
+              
+              <div class="mb-4">
+                <label class="form-label">Senha</label>
+                <input type="password" v-model="senha" class="form-control custom-input" placeholder="********" required>
+              </div>
+              
+              <button type="submit" class="btn btn-dark w-100 py-3 fw-bold mb-3">Entrar</button>
+              
+              <div class="d-flex justify-content-between auth-footer">
+                <RouterLink to="/cadastro" class="text-decoration-none text-dark fw-bold">Cadastre Aqui</RouterLink>
+                <a href="#" class="text-decoration-none text-dark opacity-75">Esqueci minha senha</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const email = ref('');
+const senha = ref('');
+const carregando = ref(false);
+const erro = ref('');
+
+const handleLogin = async () => {
+  try {
+    carregando.value = true;
+    erro.value = '';
+    
+    if (!email.value || !senha.value) {
+      erro.value = 'Email e senha são obrigatórios';
+      return;
+    }
+    
+    // TODO: Implementar autenticação com API
+    console.log('Tentando login com:', { email: email.value });
+    
+    // Simulação de sucesso (remover após integração com API)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Salvar estado de autenticação
+    localStorage.setItem('usuarioLogado', JSON.stringify({
+      email: email.value,
+      dataLogin: new Date().toISOString()
+    }));
+    
+    // Redirecionar para área do especialista
+    router.push('/especialista');
+  } catch (err) {
+    erro.value = 'Erro ao fazer login. Tente novamente.';
+    console.error(err);
+  } finally {
+    carregando.value = false;
+  }
+};
 </script>
 
 <style scoped>
-.login-page {
-	min-height: 100vh;
-	background: #ececec;
+.login-page { min-height: 100vh; background-color: #f8fafc; }
+.auth-card { 
+  background-color: #9cdb81; /* Verde do seu mockup */
+  border-radius: 40px; 
 }
-
-.top-bar {
-	background: #4fd09c;
-	padding: 0.8rem 1.2rem;
+.auth-title { font-weight: 700; color: #1e293b; }
+.custom-input { 
+  background: rgba(255,255,255,0.5); 
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 12px;
 }
-
-.brand {
-	margin: 0;
-	color: #fff;
-	font-weight: 800;
-	font-size: 2.6rem;
-	line-height: 1;
-}
-
-.login-wrapper {
-	max-width: 1200px;
-	margin: 2rem auto;
-	padding: 0 1rem;
-	display: grid;
-	grid-template-columns: 260px 1fr;
-	align-items: center;
-	gap: 2rem;
-}
-
-.illustration-card {
-	position: relative;
-	min-height: 320px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.blob {
-	width: 220px;
-	height: 220px;
-	border-radius: 55% 45% 60% 40% / 50% 35% 65% 50%;
-	background: #48d2a0;
-}
-
-.animal-image {
-	position: absolute;
-	width: 180px;
-	height: 180px;
-	object-fit: cover;
-	border-radius: 18px;
-	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-}
-
-.form-card {
-	background: #96db78;
-	border-radius: 2rem;
-	padding: 3rem;
-	max-width: 760px;
-}
-
-.form-title {
-	margin: 0 0 1rem;
-	font-size: 2rem;
-	font-weight: 500;
-}
-
-.login-form {
-	display: flex;
-	flex-direction: column;
-	gap: 0.7rem;
-}
-
-.login-form label {
-	font-size: 0.95rem;
-}
-
-.login-form input {
-	border: 1px solid #4c7e3c;
-	border-radius: 4px;
-	padding: 0.45rem 0.6rem;
-	background: rgba(255, 255, 255, 0.4);
-}
-
-.submit-btn {
-	margin-top: 0.6rem;
-	border: 0;
-	background: #000;
-	color: #fff;
-	border-radius: 999px;
-	padding: 0.55rem;
-}
-
-.links-row {
-	margin-top: 0.25rem;
-	display: grid;
-	grid-template-columns: 1fr auto;
-	column-gap: 0.8rem;
-	row-gap: 0.25rem;
-}
-
-.links-row span {
-	grid-column: 1;
-}
-
-.links-row a:first-of-type {
-	grid-column: 1;
-}
-
-.links-row a:last-of-type {
-	grid-column: 2;
-	grid-row: 1 / span 2;
-	align-self: end;
-}
-
-@media (max-width: 992px) {
-	.brand {
-		font-size: 2.1rem;
-	}
-
-	.login-wrapper {
-		grid-template-columns: 1fr;
-		margin-top: 1.2rem;
-	}
-
-	.illustration-card {
-		min-height: 220px;
-	}
-
-	.form-card {
-		padding: 2rem 1.3rem;
-	}
-
-	.form-title {
-		font-size: 1.7rem;
-	}
-
-	.links-row {
-		grid-template-columns: 1fr;
-	}
-
-	.links-row a:last-of-type {
-		grid-column: 1;
-		grid-row: auto;
-		justify-self: start;
-	}
-}
+.hero-img { max-width: 80%; }
 </style>
