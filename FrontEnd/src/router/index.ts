@@ -4,7 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import Cadastro from '../views/RegistroView.vue'
 import EspecialistaView from '../views/EspecialistaView.vue'
 import Login from '../views/LoginView.vue'
-
+import Denuncia from '../views/DenunciaView.vue'
 const routes = [
   {
     path: '/',
@@ -20,6 +20,16 @@ const routes = [
     path: '/especialista',
     name: 'specialist-area',
     component: EspecialistaView
+  },
+  {
+    path: '/especialista',
+    name: 'specialist-area',
+    component: EspecialistaView
+  },
+  {
+    path: '/denuncia',
+    name: 'denuncia',
+    component: Denuncia
   },
   {
     path: '/cadastro',

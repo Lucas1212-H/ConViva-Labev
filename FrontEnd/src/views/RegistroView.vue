@@ -68,13 +68,12 @@ const handleRegister = async () => {
       return;
     }
     
-    // TODO: Implementar registro com API
+    
     console.log('Cadastrando usuário:', { 
       nomeCompleto: nomeCompleto.value, 
       email: email.value 
     });
     
-    // Simulação de sucesso (remover após integração com API)
     await new Promise(resolve => setTimeout(resolve, 1000));
     router.push('/login');
   } catch (err) {
