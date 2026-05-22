@@ -10,15 +10,19 @@ class Ocorrencia extends Model
     use HasFactory;
 
     protected $table = 'ocorrencias';
+    protected $primaryKey = 'codigo_ocorrencia';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'denunciante_nome',
         'denunciante_contato_tipo',
         'denunciante_contato_valor',
-        'codigo_acesso',
+        'codigo_ocorrencia',
         'categoria_ocorrencia',
         'tipo_animal',
-        'situacao_animal',
-        'descricao',
+        'local_ocorrencia',
+        'descricao_ocorrencia',
         'latitude',
         'longitude',
         'ponto_referencia',

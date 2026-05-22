@@ -34,21 +34,21 @@ class OcorrenciaController extends Controller
             'denunciante_nome'          => $request->denunciante_nome,
             'denunciante_contato_tipo'  => $request->denunciante_contato_tipo,
             'denunciante_contato_valor' => $request->denunciante_contato_valor,
+            'codigo_ocorrencia'         => strtoupper(Str::random(6)),
             'categoria_ocorrencia'      => $request->categoria_ocorrencia,
             'tipo_animal'               => $request->tipo_animal,
-            'situacao_animal'           => $request->situacao_animal,
-            'descricao'                 => $request->descricao,
+            'local_ocorrencia'          => $request->situacao_animal,
+            'descricao_ocorrencia'      => $request->descricao,
             'latitude'                  => $request->latitude,
             'longitude'                 => $request->longitude,
             'ponto_referencia'          => $request->ponto_referencia,
             'foto_path'                 => $fotoPath, 
-            'codigo_acesso'             => strtoupper(Str::random(6)), 
             'status'                    => 'Pendente', 
         ]);
 
         return response()->json([
             'message' => 'Ocorrência registrada com sucesso!',
-            'codigo' => $ocorrencia->codigo_acesso,
+            'codigo' => $ocorrencia->codigo_ocorrencia,
             'data' => $ocorrencia
         ], 201);
     }
