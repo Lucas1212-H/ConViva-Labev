@@ -7,5 +7,6 @@ Route::post('/ocorrencias', [OcorrenciaController::class, 'store']);
 Route::get('/ocorrencias/pendentes', [OcorrenciaController::class, 'indexPendentes']);
 Route::get('/ocorrencias/arquivadas', [OcorrenciaController::class, 'indexArquivadas']);
 Route::get('/ocorrencias/publicados', [OcorrenciaController::class, 'indexPublicados']);
+Route::get('/ocorrencias/{id}', [OcorrenciaController::class, 'showPublicada']);
 Route::put('/ocorrencias/{id}/avaliar', [OcorrenciaController::class, 'avaliar']);
 Route::put('/ocorrencias/{id}/publicar', [OcorrenciaController::class, 'publicar']);

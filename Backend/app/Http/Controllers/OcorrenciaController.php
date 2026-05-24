@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Ocorrencia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class OcorrenciaController extends Controller
 {
@@ -34,7 +33,6 @@ class OcorrenciaController extends Controller
             'denunciante_nome'          => $request->denunciante_nome,
             'denunciante_contato_tipo'  => $request->denunciante_contato_tipo,
             'denunciante_contato_valor' => $request->denunciante_contato_valor,
-            'codigo_ocorrencia'         => strtoupper(Str::random(6)),
             'categoria_ocorrencia'      => $request->categoria_ocorrencia,
             'tipo_animal'               => $request->tipo_animal,
             'local_ocorrencia'          => $request->situacao_animal,
@@ -48,7 +46,6 @@ class OcorrenciaController extends Controller
 
         return response()->json([
             'message' => 'Ocorrência registrada com sucesso!',
-            'codigo' => $ocorrencia->codigo_ocorrencia,
             'data' => $ocorrencia
         ], 201);
     }
@@ -96,7 +93,7 @@ class OcorrenciaController extends Controller
     public function avaliar(Request $request, $id)
     {
         try {
-            $ocorrencia = Ocorrencia::where('codigo_ocorrencia', $id)->first();
+            $ocorrencia = Ocorrencia::where('id', $id)->first();
             
             if (!$ocorrencia) {
                 return response()->json([
@@ -131,8 +128,7 @@ class OcorrenciaController extends Controller
     private function mapearOcorrencia($ocorrencia)
     {
         return [
-            'id' => $ocorrencia->codigo_ocorrencia,
-            'codigo_ocorrencia' => $ocorrencia->codigo_ocorrencia,
+            'id' => $ocorrencia->id,
             'tipo_animal' => $ocorrencia->tipo_animal,
             'denunciante_nome' => $ocorrencia->denunciante_nome,
             'categoria_ocorrencia' => $ocorrencia->categoria_ocorrencia,
@@ -165,10 +161,33 @@ class OcorrenciaController extends Controller
             ], 500);
         }
     }
+
+    public function showPublicada($id)
+    {
+        try {
+            $ocorrencia = Ocorrencia::where('id', $id)
+                ->where('status', 'Publicado')
+                ->first();
+
+            if (!$ocorrencia) {
+                return response()->json([
+                    'error' => 'Ocorrência não encontrada'
+                ], 404);
+            }
+
+            return response()->json([
+                'data' => $this->mapearOcorrencia($ocorrencia)
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao buscar ocorrência: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function publicar($id)
     {
         try {
-            $ocorrencia = Ocorrencia::where('codigo_ocorrencia', $id)->first();
+            $ocorrencia = Ocorrencia::where('id', $id)->first();
             
             if (!$ocorrencia) {
                 return response()->json([
