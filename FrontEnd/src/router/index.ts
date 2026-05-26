@@ -5,7 +5,7 @@ import RegistroView from '../views/RegistroView.vue'
 import EspecialistaView from '../views/EspecialistaView.vue'
 import DenunciaView from '../views/DenunciaView.vue'
 import { useAuth } from '../composables/useAuth'
-
+import CatalogoAnimal from '../pages/CatalogoAnimal.vue'
 const routes = [
   {
     path: '/',
@@ -34,6 +34,11 @@ const routes = [
     path: '/denuncia',
     name: 'denuncia',
     component: DenunciaView
+  },
+  {
+    path: '/catalogo',
+    name: 'catalogo',
+    component: CatalogoAnimal
   }
 ]
 

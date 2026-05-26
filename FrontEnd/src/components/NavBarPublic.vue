@@ -1,16 +1,8 @@
 <template>
-  <nav class="navbar navbar-expand-lg custom-navbar px-4 py-3 shadow-sm ">
-    
-    <div class="container-fluid">
-      <img src="../assets/images/conviva.png" height="75px" max-height="75px" width="auto" alt="conviva">
-      
-      <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-        <div class="d-flex gap-3 mt-3 mt-lg-0 ">
-          <button @click="irParaEspecialista" class="btn nav-btn">
+  <nav class="navbar custom-navbar px-4 py-3 shadow-sm">
+        <div class="d-flex  gap-3 mt-3 mt-lg-0 ">
+          <img src="../assets/images/conviva.png" height="75px" max-height="75px" width="auto" alt="conviva">
+          <button @click="irParaEspecialista" class="btn nav-btn bg-info">
             {{ isAutenticado ? 'Minha Área' : 'Área do Especialista' }}
           </button>
           <RouterLink class="btn nav-btn" style="display:flex; align-items: center;" to="/">Home</RouterLink>
@@ -31,11 +23,8 @@
               <span class="text-muted" style="font-size: 0.8rem;">(91) 99838-7277</span>
             </div>
           </a>
-
            <img src="../assets/images/UFPA.png" height="60px" max-height="60px" width="auto" alt="UFPA">
         </div>
-      </div>
-    </div>
   </nav>
 </template>
 
