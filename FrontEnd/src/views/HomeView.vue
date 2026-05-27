@@ -24,7 +24,7 @@
       <div class="container">
         <h2 class="text-center fw-bold mb-5 section-title">Animais Catalogados</h2>
         <div class="row g-4">
-          <AnimalCard 
+          <AnimalCard for="animal in animais"
             v-for="animal in animais" 
             :key="animal.id"
             v-bind="animal"
@@ -131,7 +131,7 @@ onMounted(() => {
 <style scoped>
 .hero-section {
   min-height: 60vh;
-  background: url('@/assets/images/faunaaqui.png') center/cover no-repeat;
+  background: url('@/assets/images/banner_macaco.jpg') center/cover no-repeat;
   position: relative;
 }
 .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }

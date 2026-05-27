@@ -4,6 +4,9 @@ import LoginView from '../views/LoginView.vue'
 import RegistroView from '../views/RegistroView.vue'
 import EspecialistaView from '../views/EspecialistaView.vue'
 import DenunciaView from '../views/DenunciaView.vue'
+import ContatosView from '../views/ContatosView.vue'
+import QuemSomos from '../views/QuemSomos.vue'
+import BlogView from '../views/BlogView.vue'
 import { useAuth } from '../composables/useAuth'
 import CatalogoAnimal from '../pages/CatalogoAnimal.vue'
 const routes = [
@@ -34,6 +37,21 @@ const routes = [
     path: '/denuncia',
     name: 'denuncia',
     component: DenunciaView
+  },
+  {
+    path: '/contato',
+    name: 'contato',
+    component: ContatosView
+  },
+  {
+    path: '/sobre',
+    name: 'sobre',
+    component: QuemSomos
+  },
+  {
+    path: '/blog',
+    name: 'blog',
+    component: BlogView
   },
   {
     path: '/catalogo',
