@@ -6,7 +6,7 @@
         <span>contato@conviva.com</span>
       </div>
       <div class="social-icons d-flex gap-3">
-        <a href="https://www.instagram.com/convivaambiental/" target="_blank" class="text-white"><i class="bi bi-instagram"></i></a>
+        <a href="https://www.instagram.com/conviva.labev/" target="_blank" class="text-white"><i class="bi bi-instagram"></i></a>
         <a href="mailto:contato@conviva.com" class="text-white"><i class="bi bi-envelope"></i></a>
       </div>
     </div>

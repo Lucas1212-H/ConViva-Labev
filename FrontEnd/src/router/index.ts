@@ -9,54 +9,61 @@ import QuemSomos from '../views/QuemSomos.vue'
 import BlogView from '../views/BlogView.vue'
 import { useAuth } from '../composables/useAuth'
 import CatalogoAnimal from '../pages/CatalogoAnimal.vue'
+
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { title: 'Home' } // Título definido
   },
   {
     path: '/cadastro',
     name: 'cadastro',
     component: RegistroView,
-    meta: { requiresGuest: true }
+    meta: { title: 'Cadastro', requiresGuest: true }
   },
   {
     path: '/login',
     name: 'login',
     component: LoginView,
-    meta: { requiresGuest: true }
+    meta: { title: 'Login', requiresGuest: true }
   },
   {
     path: '/especialista',
     name: 'specialist-area',
     component: EspecialistaView,
-    meta: { requiresAuth: true }
+    meta: { title: 'Área do Especialista', requiresAuth: true }
   },
   {
     path: '/denuncia',
     name: 'denuncia',
-    component: DenunciaView
+    component: DenunciaView,
+    meta: { title: 'Fazer Denúncia' }
   },
   {
     path: '/contato',
     name: 'contato',
-    component: ContatosView
+    component: ContatosView,
+    meta: { title: 'Contatos' }
   },
   {
     path: '/sobre',
     name: 'sobre',
-    component: QuemSomos
+    component: QuemSomos,
+    meta: { title: 'Quem Somos' }
   },
   {
     path: '/blog',
     name: 'blog',
-    component: BlogView
+    component: BlogView,
+    meta: { title: 'Blog' }
   },
   {
     path: '/catalogo',
     name: 'catalogo',
-    component: CatalogoAnimal
+    component: CatalogoAnimal,
+    meta: { title: 'Catálogo Animal' }
   }
 ]
 
@@ -65,30 +72,30 @@ const router = createRouter({
   routes
 })
 
-// Guards de rota para autenticação
+// Guards de rota unificados: Autenticação + Título Dinâmico
 router.beforeEach((to, from, next) => {
   const { isAutenticado } = useAuth()
 
-  // Se a rota requer autenticação
-  if (to.meta.requiresAuth) {
-    if (isAutenticado.value) {
-      next()
-    } else {
-      // Redirecionar para login se não estiver autenticado
-      next({ name: 'login', query: { redirect: to.fullPath } })
-    }
-  }
-  // Se a rota requer estar desautenticado (como login/cadastro)
-  else if (to.meta.requiresGuest) {
-    if (!isAutenticado.value) {
-      next()
-    } else {
-      // Se já está autenticado e tenta acessar login/cadastro, redireciona para dashboard
-      next({ name: 'specialist-area' })
-    }
+  // 1. Lógica de Título da Aba
+  const tituloPagina = to.meta.title as string
+  if (tituloPagina) {
+    document.title = `${tituloPagina} | ConViva`
   } else {
-    next()
+    document.title = 'ConViva' // Fallback
   }
+
+  // 2. Lógica de Autenticação
+  if (to.meta.requiresAuth) {
+    if (!isAutenticado.value) {
+      return next({ name: 'login', query: { redirect: to.fullPath } })
+    }
+  } else if (to.meta.requiresGuest) {
+    if (isAutenticado.value) {
+      return next({ name: 'specialist-area' })
+    }
+  }
+
+  next()
 })
 
-export default router
+export default router   
