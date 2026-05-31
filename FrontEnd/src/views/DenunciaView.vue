@@ -167,6 +167,8 @@ const finalizarFormulario = async (dadosFoto) => {
     // Envia para o backend
     const resposta = await ocorrenciaService.criarDenuncia(dadosParaEnviar)
     
+    // Sucesso
+    alert('Ocorrência enviada com sucesso!')
     // Sucesso - mostra tela de conclusão
     mensagemErro.value = ''
     denunciaEnviada.value = true

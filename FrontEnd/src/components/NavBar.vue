@@ -1,15 +1,17 @@
 <template>
   <nav class="navbar-especialista d-flex align-items-center justify-content-between px-4">
     <div class="navbar-brand-container">
-      <h1 class="m-0 brand-text">Fauna<span>aqui!</span></h1>
+      <h1 class="m-0 brand-text">ConViva <span>Labev</span></h1>
+      
+
     </div>
 
     <div class="nav-pill-container">
       <div class="nav-pill-bg d-flex align-items-center justify-content-around">
+        
         <a href="#" class="nav-item-link" :class="{ active: abaAtiva === 'triagem' }" @click.prevent="$emit('mudarAba', 'triagem')">Início</a>
         <a href="#" class="nav-item-link" :class="{ active: abaAtiva === 'arquivadas' }" @click.prevent="$emit('mudarAba', 'arquivadas')">Denuncias Arquivadas</a>
         <a href="#" class="nav-item-link" :class="{ active: abaAtiva === 'publicados' }" @click.prevent="$emit('mudarAba', 'publicados')">Publicados</a>
-        <a href="#" class="nav-item-link">Sobre nós</a>
       </div>
     </div>
 
