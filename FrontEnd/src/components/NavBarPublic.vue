@@ -16,7 +16,7 @@
         
         <RouterLink class="navbar-brand d-flex align-items-center" to="/">
           <div class="logo-text fw-bold lh-1">
-            <img src="../assets/images/conviva.png" height="75px" max-height="75px" width="auto" alt="conviva">
+            <img src="../assets/images/logo_sf.png" height="75px" max-height="75px" width="auto" alt="conviva">
           </div>
         </RouterLink>
 

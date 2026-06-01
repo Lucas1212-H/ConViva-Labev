@@ -2,23 +2,43 @@
   <div class="home-page">
     <NavBarPublic />
 
-    <header class="hero-section d-flex align-items-center">
-      <div class="overlay"></div>
-      <div class="container position-relative text-white">
+    <section class="hero-banner position-relative d-flex align-items-end">
+      <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+      
+      <div class="container-fluid px-5 pb-5 position-relative z-index-2 text-white">
+        <nav aria-label="breadcrumb" class="mb-2">
+          
+        </nav>
+        
+        <h1 class="display-4 fw-bold m-0 hero-title">Home</h1>
+
+
+      </div>
+
+      <div class="banner-text-right position-absolute end-0 top-50 translate-middle-y pe-5 text-white" style="max-width: 450px;">
+        <p class="fs-5 fw-light lh-lg">
+          Entre macacos, sapos, cobras e lagartos, SALVAM-SE TODOS! Projeto de coexistência e conservação de animais silvestres no campus da UFPA        </p>
+      </div>
+
+    </section> 
+
+    
+
+    <div class="container position-relative text-white">
         <div class="row align-items-center">
           <div class="col-lg-6 px-10">
             <div class="hero-card shadow-lg">
-              <h1 class="display-10 fw-bold">Encontrou um animal silvestre na região?</h1>
-              <p class="lead">Ajude a ciência e a preservação local com apenas alguns cliques.</p>
+              <h1 class="display-10 fw-bold" style="color: #000;">Encontrou um animal silvestre na região?</h1>
+              <p class="lead" style="color: #000;">Ajude a ciência e a preservação local com apenas alguns cliques.</p>
               <button @click="irParaDenuncia" class="btn btn-warning btn-lg fw-bold mt-3 px-5 py-3">Denuncie Aqui</button>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div id="mapa-fauna" class="rounded-4 shadow-sm mb-4" style="height: 400px; width: 100%;"></div>
+          <div class="col-lg-6 p-5 "> ">
+            <div id="mapa-fauna" class="rounded-4 shadow-sm mb-4" style="height: 350px; width: 100%;"></div>
           </div>
         </div>
       </div>
-    </header>
+    
 
     <section class="py-5 bg-light">
       <div class="container">
@@ -135,7 +155,45 @@ onMounted(() => {
   position: relative;
 }
 .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
-.hero-card { background: rgba(0, 0, 0, 0.5); padding: 3rem; border-radius: 25px; backdrop-filter: blur(8px); }
+.hero-card { background: color#eef6ec; padding: 3rem; border: ; backdrop-filter: blur(8px); }
 .blur-btn { backdrop-filter: blur(5px); border-radius: 15px; }
 .section-title { color: #14532d; font-size: 2.5rem; }
+
+.hero-banner {
+  height: 420px; /* Layout Horizontal Widescreen */
+  /* Substitua pelo caminho real da imagem da muda/solo */
+  background-image: url('../assets/images/banner_macaco.jpg');
+  background-size: cover;
+  background-position: center 60%;
+  position: relative;
+  /* Linha inferior de acabamento ecológico */
+  border-bottom: 6px solid #9ef01a; 
+}
+
+.hero-overlay {
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%);
+  z-index: 1;
+}
+
+.z-index-2 {
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  letter-spacing: -0.02em;
+}
+
+.banner-text-right {
+  display: none;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  z-index: 3;
+}
+
+/* Mostrar texto apenas em telas grandes */
+@media (min-width: 992px) {
+  .banner-text-right {
+    display: block;
+  }
+}
 </style>

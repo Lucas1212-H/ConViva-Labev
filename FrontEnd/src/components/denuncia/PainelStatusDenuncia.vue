@@ -2,8 +2,8 @@
   <div class="col-md-5 col-lg-4 bg-success text-white p-4 d-none d-md-flex flex-column justify-content-between painel-lateral">
     <div>
       <div class="d-flex align-items-center gap-2 mb-3">
-        <span class="fs-3">🌱</span>
-        <h2 class="h5 m-0 fw-bold text-uppercase tracking-wider">Fauna Aqui</h2>
+        <img src="@/assets/images/logo.jpg" alt="ConViva" style="width: 40px; height: 40px;" >
+        <h2 class="h5 m-0 fw-bold tracking-wider"">ConViva</h2>
       </div>
       <p class="small text-white-50 lh-sm">Sistema de Monitoramento e Registro de Ocorrências Animais no Campus.</p>
     </div>
