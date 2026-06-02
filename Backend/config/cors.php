@@ -7,30 +7,20 @@ return [
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
     |
-    | Here you may configure CORS settings for your application. This
-    | determines which cross-origin requests are allowed.
+    | Here you may configure your settings for cross-origin resource sharing
+    | or "CORS". This determines what cross-origin operations may execute
+    | in web browsers. You are free to adjust these settings as needed.
     |
     */
 
-    'paths' => ['api/*', '/api/*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'localhost:5173',      // Vite dev server padrão
-        'localhost:3000',      // Alternativa
-        '127.0.0.1:5173',
-        '127.0.0.1:3000',
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:3000',
-    ],
+    // Liberado para aceitar as requisições vindas do domínio do Render e do Localhost
+    'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => [
-        '#^http://localhost:\d+$#',
-        '#^http://127\.0\.0\.1:\d+$#',
-    ],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
@@ -38,6 +28,7 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    // IMPORTANTE: Deve ser false se 'allowed_origins' for '*'
+    'supports_credentials' => false,
 
 ];
