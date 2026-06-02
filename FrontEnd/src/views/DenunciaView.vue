@@ -13,7 +13,6 @@
 
               <div class="col-12 col-md-8 bg-white p-3 p-sm-4 d-flex flex-column justify-content-start corpo-formulario">
 
-                <!-- Alerta de Erro -->
                 <UiMessage
                   v-if="mensagemErro && !denunciaEnviada"
                   type="error"
@@ -30,7 +29,6 @@
                   @dismiss="mensagemSucesso = ''"
                 />
 
-                <!-- Spinner de Carregamento -->
                 <div v-if="enviando" class="text-center py-5">
                   <div class="spinner-border text-success" role="status">
                     <span class="visually-hidden">Enviando...</span>
@@ -38,7 +36,6 @@
                   <p class="mt-3 text-muted">Enviando denuncia...</p>
                 </div>
 
-                <!-- Tela de Conclusão -->
                 <div v-else-if="denunciaEnviada" class="w-100 container-passos mx-auto">
                   <PassoConclusao 
                     @novaOcorrencia="iniciarNovaOcorrencia"
@@ -46,7 +43,6 @@
                   />
                 </div>
 
-                <!-- Formulário -->
                 <div v-else class="w-100 container-passos mx-auto">
                   <PassoContato v-if="passoAtual === 1" @proximo="avancarPasso1" />
 
@@ -76,7 +72,7 @@
 
         </div>
       </div>
-        </div>
+    </div>
   </div>
 </template>
 
@@ -198,7 +194,7 @@ const iniciarNovaOcorrencia = () => {
   denunciaEnviada.value = false
   passoAtual.value = 1
   mensagemSucesso.value = ''
-  mensagemErro = ''
+  mensagemErro.value = '' // CORRIGIDO: adicionado o .value para evitar erro de reatribuição de const
 }
 
 const voltarParaInicio = () => {
