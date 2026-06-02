@@ -38,4 +38,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Executa o comando via shell string para garantir a expansão correta das variáveis de ambiente e roda o script
-CMD sh -c "php artisan package:discover --ansi && php artisan config:cache || true && php artisan route:cache || true && php artisan view:cache || true && php artisan migrate --force || true /app/start-mysql.sh"
+CMD sh -c "php artisan package:discover --ansi || true && php artisan config:cache --no-interaction || true && php artisan route:cache --no-interaction || true && php artisan view:cache --no-interaction || true && php artisan migrate --force || true && php artisan serve --host=0.0.0.0 --port=${PORT}"
