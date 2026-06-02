@@ -1,9 +1,14 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8000/api' // Ajuste conforme necessário
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// URL base dinâmica
+const API_BASE_URL = isLocal 
+  ? 'http://localhost:8000' 
+  : 'https://conviva-labev.onrender.com';
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   }
