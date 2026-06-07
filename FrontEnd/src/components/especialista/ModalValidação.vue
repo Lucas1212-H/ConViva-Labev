@@ -139,7 +139,7 @@ const getImagemUrl = (denuncia) => {
   if (!denuncia || !denuncia.imagem) return 'https://picsum.photos/640/420';
   const nomeArquivo = denuncia.foto || denuncia.imagem;
   if(!nomeArquivo) return 'https://picsum.photos/640/420';
-  if (nomeArquivo.startWith('http')) return nomeArquivo; // já é uma URL completa
+  if (nomeArquivo.startsWith('http')) return nomeArquivo; // já é uma URL completa
   return `${STORAGE_BASE}/${nomeArquivo}`;
 };
 </script>

@@ -62,7 +62,7 @@ const getImagemUrl = (denuncia) => {
   if (!denuncia) return 'https://picsum.photos/640/420';
   const nomeArquivo = denuncia.foto || denuncia.imagem;
   if (!nomeArquivo) return 'https://picsum.photos/640/420';
-  if (nomeArquivo.startWith('http')) return nomeArquivo;
+  if (nomeArquivo.startsWith('http')) return nomeArquivo;
   return `${STORAGE_BASE}/${nomeArquivo}`;
 };
 defineProps({
