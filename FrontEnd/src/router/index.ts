@@ -10,13 +10,15 @@ import BlogView from '../views/BlogView.vue'
 import CatalogoAnimal from '../pages/CatalogoAnimal.vue'
 import AnimalInfo from '../components/AnimalInfo.vue'
 import { useAuth } from '../composables/useAuth'
+import EditarConta from '@/pages/EditarConta.vue'
+import AprovarUsuario from '@/pages/especialista/AprovarUsuario.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView,
-    meta: { title: 'Home' } // Título definido
+    meta: { title: 'Home' }
   },
   {
     path: '/cadastro',
@@ -58,13 +60,13 @@ const routes = [
     path: '/blog',
     name: 'blog',
     component: BlogView,
-    meta: { title: 'Blog' },
+    meta: { title: 'Blog' }
   },
   {
     path: '/catalogo',
     name: 'catalogo',
     component: CatalogoAnimal,
-    meta: { title: 'Catálogo Animal' },
+    meta: { title: 'Catálogo Animal' }
   },
   {
     path: '/catalogo/:id',
@@ -72,7 +74,21 @@ const routes = [
     component: AnimalInfo,
     props: true
   },
+  {
+    path: '/perfil',
+    name: 'editar-perfil',
+    component: EditarConta,
+    meta: { title: 'Minha Conta', requiresAuth: true } // Protegida para logados
+  },
+  {
+    path: '/aprovar-usuario',
 
+
+    
+    name: 'aprovar-usuario',
+    component: AprovarUsuario,
+    meta: { title: 'Aprovar Usuário', requiresAuth: true, requiresAdmin: true } // 🛡️ Bloqueio para admin
+  }
 ]
 
 const router = createRouter({
@@ -80,30 +96,37 @@ const router = createRouter({
   routes
 })
 
-// Guards de rota unificados: Autenticação + Título Dinâmico
-router.beforeEach((to, from, next) => {
+// Guards de rota unificados: Autenticação + Nível de Acesso + Título Dinâmico
+router.beforeEach((to, from) => {
   const { isAutenticado } = useAuth()
 
   // 1. Lógica de Título da Aba
-  const tituloPagina = to.meta.title as string
-  if (tituloPagina) {
+  const tituloPagina = to.meta.title
+  if (typeof tituloPagina === 'string') {
     document.title = `${tituloPagina} | ConViva`
   } else {
-    document.title = 'ConViva' // Fallback
+    document.title = 'ConViva'
   }
 
-  // 2. Lógica de Autenticação
+  // 2. Lógica de Autenticação Global
   if (to.meta.requiresAuth) {
     if (!isAutenticado.value) {
-      return next({ name: 'login', query: { redirect: to.fullPath } })
+      return { name: 'login', query: { redirect: to.fullPath } }
+    }
+    
+    // 🛡️ Filtro Extra: Bloqueia colaboradores comuns em rotas de Admin
+    if (to.meta.requiresAdmin) {
+      const tipoConta = localStorage.getItem('user_tipo')
+      if (tipoConta !== 'Administrador') {
+        alert('Acesso restrito apenas para administradores do sistema!')
+        return { name: 'specialist-area' }
+      }
     }
   } else if (to.meta.requiresGuest) {
     if (isAutenticado.value) {
-      return next({ name: 'specialist-area' })
+      return { name: 'specialist-area' }
     }
   }
-
-  next()
 })
 
 export default router

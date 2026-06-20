@@ -1,88 +1,94 @@
 import { ref, computed } from 'vue'
+import axios from 'axios'
 
 interface User {
-  id?: string
+  id?: number | string
   nome: string
   email: string
-  dataLogin?: string
+  tipo_conta: 'Administrador' | 'Colaborador'
+  status: 'Ativo' | 'Pendente'
 }
 
 const usuarioLogado = ref<User | null>(null)
 const carregando = ref(false)
 
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE_URL = isLocal ? 'http://localhost:8000/api' : 'https://conviva-labev.onrender.com/api'
+
 // Carregar dados do localStorage ao inicializar
 const loadStoredUser = () => {
-  const stored = localStorage.getItem('usuarioLogado')
-  if (stored) {
-    usuarioLogado.value = JSON.parse(stored)
+  const token = localStorage.getItem('auth_token')
+  const userStored = localStorage.getItem('usuarioLogado')
+
+  if (token && userStored) {
+    usuarioLogado.value = JSON.parse(userStored)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
   }
 }
 
 export const useAuth = () => {
   const isAutenticado = computed(() => !!usuarioLogado.value)
 
-  const register = async (nome: string, email: string, senha: string) => {
+  const register = async (nome: string, email: string, password: string) => {
     try {
       carregando.value = true
-      // TODO: Integrar com API real
-      console.log('Registrando usuário:', { nome, email })
+      const response = await axios.post(`${API_BASE_URL}/registrar`, {
+        name: nome,
+        email,
+        password,
+        tipo_conta: 'Colaborador' // Padrão para novos registros
+      })
       
-      // Simulação de requisição
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Salvar dados do usuário (sem senha!)
-      const novoUsuario: User = {
-        id: Math.random().toString(36).substr(2, 9),
-        nome,
-        email
-      }
-      
-      localStorage.setItem('usuarioCadastrado', JSON.stringify(novoUsuario))
-      
-      return { sucesso: true, mensagem: 'Cadastro realizado com sucesso!' }
-    } catch (erro) {
+      return { sucesso: true, mensagem: response.data.message }
+  } catch (erro: any) {
       console.error('Erro ao registrar:', erro)
-      return { sucesso: false, mensagem: 'Erro ao registrar. Tente novamente.' }
+      const msg = erro.response?.data?.message || 'Erro ao registrar. Tente novamente.'
+      return { sucesso: false, mensagem: msg }
     } finally {
       carregando.value = false
     }
   }
-
-  const login = async (email: string, senha: string) => {
+  /**
+   * 🔑 LOGIN REAL (Bate no AuthController do Laravel)
+   */
+  const login = async (credenciais: { email: string; password?: string; senha?: string }) => {
     try {
       carregando.value = true
-      // TODO: Integrar com API real
-      console.log('Fazendo login com:', { email })
       
-      // Verificar se o usuário foi cadastrado
-      const usuarioCadastrado = localStorage.getItem('usuarioCadastrado')
-      if (!usuarioCadastrado) {
-        return { sucesso: false, mensagem: 'Usuário não encontrado. Cadastre-se primeiro.' }
-      }
-      
-      const userData = JSON.parse(usuarioCadastrado)
-      
-      // Simulação de requisição
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Validação simples (remover após integração com API)
-      if (email !== userData.email) {
-        return { sucesso: false, mensagem: 'Email ou senha inválidos.' }
-      }
-      
-      // Login bem-sucedido
-      const usuarioAutenticado: User = {
-        ...userData,
-        dataLogin: new Date().toISOString()
-      }
-      
-      usuarioLogado.value = usuarioAutenticado
-      localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAutenticado))
-      
-      return { sucesso: true, mensagem: 'Login realizado com sucesso!' }
-    } catch (erro) {
+      // Captura o e-mail e faz o fallback seguro da senha
+      const emailFinal = credenciais.email
+      const passwordFinal = credenciais.password || credenciais.senha
+
+      console.log('Enviando payload real para a API:', { email: emailFinal, password: passwordFinal })
+
+      const response = await axios.post(`${API_BASE_URL}/login`, {
+        email: emailFinal,
+        password: passwordFinal
+      })
+
+      // Extrai os dados retornados pelo Laravel
+      const { access_token, user } = response.data
+
+      // Grava no LocalStorage para persistência
+      localStorage.setItem('fauna_token', access_token)
+      localStorage.setItem('user_name', user.name)
+      localStorage.setItem('user_email', user.email)
+      localStorage.setItem('user_tipo', user.tipo_conta)
+      localStorage.setItem('usuario_logado_dados', JSON.stringify(user))
+
+      // Injeta o token nas requisições subsequentes
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+
+      // Atualiza o estado global reativo do Vue
+      usuarioLogado.value = user
+
+      return { sucesso: true, user }
+    } catch (erro: any) {
       console.error('Erro ao fazer login:', erro)
-      return { sucesso: false, mensagem: 'Erro ao fazer login. Tente novamente.' }
+      
+      // Captura mensagens amigáveis do validador do Laravel
+      const msg = erro.response?.data?.message || 'Erro de validação ou credenciais incorretas.'
+      return { sucesso: false, mensagem: msg }
     } finally {
       carregando.value = false
     }
@@ -90,8 +96,8 @@ export const useAuth = () => {
 
   const logout = () => {
     usuarioLogado.value = null
-    localStorage.removeItem('usuarioLogado')
-    localStorage.removeItem('usuarioCadastrado')
+    localStorage.clear()
+    delete axios.defaults.headers.common['Authorization']
   }
 
   // Carregar dados do localStorage quando o composable é inicializado

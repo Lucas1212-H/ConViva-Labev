@@ -89,7 +89,7 @@ const handleLogin = async () => {
     }
     
     carregando.value = true
-    const resultado = await login(email.value, senha.value)
+    const resultado = await login({ email: email.value, senha: senha.value })
     
     if (resultado.sucesso) {
       const redirectPath = String(router.currentRoute.value.query.redirect || '/especialista')

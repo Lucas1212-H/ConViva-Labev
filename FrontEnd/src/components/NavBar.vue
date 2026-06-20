@@ -30,9 +30,14 @@
           {{ inicialNome }}
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li><a class="dropdown-item" href="#">Perfil</a></li>
+          <li>
+            <RouterLink class="dropdown-item" :to="{ name: 'editar-perfil' }">✏️ Editar Perfil</RouterLink>
+          </li>
+          <li v-if="isAdmin">
+            <RouterLink class="dropdown-item text-warning fw-semibold" :to="{ name: 'aprovar-usuario' }">🛡️ Gerenciar Usuários</RouterLink>
+          </li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#" @click.prevent="fazerLogout">Sair</a></li>
+          <li><a class="dropdown-item text-danger" href="#" @click.prevent="fazerLogout">🚪 Sair</a></li>
         </ul>
       </div>
     </div>
@@ -41,7 +46,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
 const props = defineProps({
@@ -55,6 +60,10 @@ const emit = defineEmits(['mudarAba'])
 
 const router = useRouter()
 const { usuarioLogado, logout } = useAuth()
+
+const isAdmin = computed(() => {
+  return localStorage.getItem('user_tipo') === 'Administrador'
+})
 
 const selecionarAba = (aba) => {
   if (props.abaAtiva !== undefined) {

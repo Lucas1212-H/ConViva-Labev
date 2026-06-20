@@ -1,9 +1,33 @@
 <?php
-
+namespace App\Http\Controllers; 
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OcorrenciaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\EspecieController;
+use App\Http\Controllers\AuthController;
+use App\Http\Middleware\CheckAdmin;
+use App\Http\Controllers\UserController;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    
+    Route::put('/perfil', [AuthController::class, 'atualizarPerfil']);
+    Route::delete('/perfil', [AuthController::class, 'deletarPerfil']);
+
+    // Gerenciamento de Usuários (Admin)
+    Route::get('/usuarios', [UserController::class, 'index']);
+    Route::post('/usuarios/{id}/aprovar', [UserController::class, 'aprovarUsuario']);
+    Route::put('/usuarios/{id}', [UserController::class, 'update']);
+    Route::delete('/usuarios/{id}', [UserController::class, 'destroy']);
+});
+
+Route::post('/registrar', [AuthController::class, 'registrar']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
 
 Route::post('/ocorrencias', [OcorrenciaController::class, 'store']);
 Route::get('/ocorrencias/pendentes', [OcorrenciaController::class, 'indexPendentes']);

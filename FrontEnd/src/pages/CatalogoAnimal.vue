@@ -7,7 +7,7 @@
       <section v-if="!categoriaSelecionada">
         <header class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="h3 fw-bold text-dark m-0">Catálogo de Categorias</h1>
-          <button class="btn btn-success fw-medium px-4" @click="modalNovaCategoria = true">
+          <button v-if="eAdmin" class="btn btn-success fw-medium px-4" @click="modalNovaCategoria = true">
             + Nova Categoria
           </button>
         </header>
@@ -15,10 +15,19 @@
         <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center">
           <div class="col" v-for="cat in listaCategorias" :key="cat.id_categoria">
             <article 
-              class="card p-4 text-center shadow-sm h-100 border-0 rounded-3"
+              class="card p-4 text-center shadow-sm h-100 border-0 rounded-3 position-relative"
               style="cursor: pointer;"
               @click="selecionarCategoria(cat)"
             >
+              <button 
+                v-if="eAdmin" 
+                class="btn btn-sm btn-light border position-absolute top-0 end-0 m-2 rounded-circle btn-editar-cat"
+                title="Editar Categoria"
+                @click.stop="prepararEdicaoCategoria(cat)"
+              >
+                ✏️
+              </button>
+
               <figure class="m-0">
                 <img 
                   :src="obterImagemUrlTratada(cat)" 
@@ -43,7 +52,7 @@
             <h1 class="h3 fw-bold text-success m-0">Espécies em {{ categoriaSelecionada.nome_popular }}</h1>
           </div>
           
-          <button class="btn btn-primary fw-medium px-4" @click="modalNovaEspecie = true">
+          <button v-if="eAdmin" class="btn btn-primary fw-medium px-4" @click="modalNovaEspecie = true">
             + Nova Espécie
           </button>
         </header>
@@ -98,6 +107,39 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="modalNovaCategoria = false">Cancelar</button>
             <button type="button" class="btn btn-success" @click="criarCategoria">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" :class="{ show: modalEditarCategoria }" :style="{ display: modalEditarCategoria ? 'block' : 'none' }" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Editar Categoria</h5>
+            <button type="button" class="btn-close btn-close-white" @click="modalEditarCategoria = false"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Nome Científico</label>
+              <input type="text" class="form-control" v-model="formEditarCategoria.nome_cientifico">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nome Popular</label>
+              <input type="text" class="form-control" v-model="formEditarCategoria.nome_popular">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Substituir Foto</label>
+              <input type="file" class="form-control" @change="handleFotoEditarCategoriaChange" accept="image/*">
+              <small class="text-muted">Deixe em branco se preferir manter a imagem atual.</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="modalEditarCategoria = false">Cancelar</button>
+            <button type="button" class="btn btn-primary" @click="salvarEdicaoCategoria" :disabled="salvandoCategoria">
+              <span v-if="salvandoCategoria" class="spinner-border spinner-border-sm me-1"></span>
+              Atualizar
+            </button>
           </div>
         </div>
       </div>
@@ -171,7 +213,7 @@
       </div>
     </div>
 
-    <div class="modal-backdrop fade" :class="{ show: modalNovaCategoria || modalNovaEspecie }" v-if="modalNovaCategoria || modalNovaEspecie"></div>
+    <div class="modal-backdrop fade" :class="{ show: modalNovaCategoria || modalNovaEspecie || modalEditarCategoria }" v-if="modalNovaCategoria || modalNovaEspecie || modalEditarCategoria"></div>
   </div>
 </template>
 
@@ -183,7 +225,6 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-// Configura a URL base da API dinamicamente baseado no ambiente
 const API_BASE_URL = isLocal 
   ? 'http://localhost:8000' 
   : 'https://conviva-labev.onrender.com';
@@ -198,10 +239,18 @@ export default {
       listaCategorias: [],
       modalNovaCategoria: false,
       modalNovaEspecie: false,
+      modalEditarCategoria: false, // Controle do modal de edição
+      salvandoCategoria: false,
       carregandoOcorrencias: false,
       ocorrenciasPublicadas: [],
       ocorrenciasSelecionadas: [],
       formCategoria: {
+        nome_cientifico: '',
+        nome_popular: '',
+        foto: null
+      },
+      formEditarCategoria: { // Formulário isolado para a edição
+        id_categoria: null,
         nome_cientifico: '',
         nome_popular: '',
         foto: null
@@ -214,8 +263,14 @@ export default {
       }
     }
   },
+  computed: {
+    // 🛡️ Propriedade Computada para verificar o nível de acesso em tempo de execução
+    eAdmin() {
+      const tipo = localStorage.getItem('user_tipo');
+      return tipo === 'Administrador';
+    }
+  },
   methods: {
-    // CORRIGIDO: Método movido para dentro do escopo de methods e adaptado para ler qualquer modelo (categoria ou espécie)
     obterImagemUrlTratada(item) {
       const fallback = 'https://picsum.photos/seed/fauna/300/200';
       if (!item) return fallback;
@@ -225,14 +280,12 @@ export default {
       
       if (nomeArquivo.startsWith('http')) return nomeArquivo;
       
-      // Limpa prefixos duplicados do Laravel se existirem no retorno do banco
       const nomeLimpo = nomeArquivo.replace(/^public\//, '');
       
       if (isLocal) {
         return `${API_BASE_URL}/storage/${nomeLimpo}`;
       }
       
-      // Em produção, passa pela rota de escape da API para contornar o bloqueio de CORS (ORB)
       return `${API_BASE_URL}/api/imagens/${nomeLimpo}`;
     },
 
@@ -247,29 +300,26 @@ export default {
     
     async selecionarCategoria(categoria) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/categorias/${categoria.id_categoria || categoria.id}`);
+        const id = categoria.id_categoria || categoria.id;
+        const response = await axios.get(`${API_BASE_URL}/api/categorias/${id}`);
         let dados = response.data;
         
-        if (Array.isArray(dados)) {
-          dados = dados[0] || {};
-        }
-        
-        if (!dados.especies) {
-          dados.especies = [];
-        }
+        if (Array.isArray(dados)) { dados = dados[0] || {}; }
+        if (!dados.especies) { dados.especies = []; }
         
         this.categoriaSelecionada = dados;
       } catch (error) {
         console.error('Erro ao carregar espécies:', error);
-        this.categoriaSelecionada = {
-          ...categoria,
-          especies: []
-        };
+        this.categoriaSelecionada = { ...categoria, especies: [] };
       }
     },
     
     handleFotoCategoriaChange(event) {
       this.formCategoria.foto = event.target.files[0] || null;
+    },
+
+    handleFotoEditarCategoriaChange(event) {
+      this.formEditarCategoria.foto = event.target.files[0] || null;
     },
     
     handleFotoEspecieChange(event) {
@@ -291,9 +341,7 @@ export default {
         }
         
         await axios.post(`${API_BASE_URL}/api/categorias`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
         
         this.formCategoria = { nome_cientifico: '', nome_popular: '', foto: null };
@@ -303,23 +351,54 @@ export default {
         alert('Categoria criada com sucesso!');
       } catch (error) {
         console.error('Erro ao criar categoria:', error);
-        alert('Erro ao criar categoria. Verifique o console para mais detalhes.');
+        alert('Erro ao criar categoria.');
+      }
+    },
+
+    // ✏️ Prepara os inputs do modal com as informações atuais da categoria escolhida
+    prepararEdicaoCategoria(categoria) {
+      this.formEditarCategoria.id_categoria = categoria.id_categoria || categoria.id;
+      this.formEditarCategoria.nome_cientifico = categoria.nome_cientifico;
+      this.formEditarCategoria.nome_popular = categoria.nome_popular;
+      this.formEditarCategoria.foto = null; // Reseta o input de arquivo
+      this.modalEditarCategoria = true;
+    },
+
+    // 🚀 Envia a atualização da categoria para a API do Laravel
+    async salvarEdicaoCategoria() {
+      try {
+        this.salvandoCategoria = true;
+        const id = this.formEditarCategoria.id_categoria;
+
+        const formData = new FormData();
+        formData.append('_method', 'PUT'); // Truque essencial para o Laravel ler arquivos em rotas de atualização
+        formData.append('nome_cientifico', this.formEditarCategoria.nome_cientifico);
+        formData.append('nome_popular', this.formEditarCategoria.nome_popular);
+        
+        if (this.formEditarCategoria.foto) {
+          formData.append('foto', this.formEditarCategoria.foto);
+        }
+
+        await axios.post(`${API_BASE_URL}/api/categorias/${id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        alert('Categoria atualizada com sucesso!');
+        this.modalEditarCategoria = false;
+        await this.buscarDadosDoCatalogo(); // Atualiza a grade visual da aplicação
+
+      } catch (error) {
+        console.error('Erro ao editar categoria:', error);
+        alert('Erro ao atualizar a categoria.');
+      } finally {
+        this.salvandoCategoria = false;
       }
     },
     
     async criarEspecie() {
       try {
-        if (!this.categoriaSelecionada) {
-          alert('Selecione uma categoria primeiro!');
-          return;
-        }
-
+        if (!this.categoriaSelecionada) { alert('Selecione uma categoria primeiro!'); return; }
         const categoriaId = this.categoriaSelecionada.id_categoria || this.categoriaSelecionada.id;
-
-        if (!categoriaId) {
-          alert('Categoria inválida. Reabra a categoria e tente novamente.');
-          return;
-        }
         
         if (!this.formEspecie.nome_cientifico || !this.formEspecie.nome_popular) {
           alert('Preencha todos os campos obrigatórios!');
@@ -331,14 +410,10 @@ export default {
         formData.append('nome_cientifico', this.formEspecie.nome_cientifico);
         formData.append('nome_popular', this.formEspecie.nome_popular);
         formData.append('descricao', this.formEspecie.descricao);
-        if (this.formEspecie.foto) {
-          formData.append('foto', this.formEspecie.foto);
-        }
+        if (this.formEspecie.foto) { formData.append('foto', this.formEspecie.foto); }
         
         const responseCriacao = await axios.post(`${API_BASE_URL}/api/especies`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
 
         const novaEspecieId = responseCriacao.data?.id_especie || responseCriacao.data?.id;
@@ -355,26 +430,15 @@ export default {
         
         const response = await axios.get(`${API_BASE_URL}/api/categorias/${categoriaId}`);
         const dados = response.data;
-        if (!dados.especies) {
-          dados.especies = [];
-        }
-        this.categoriaSelecionada = dados;
+        this.categoriaSelecionada = dados.especies ? dados : { ...dados, especies: [] };
         
         alert('Espécie criada com sucesso!');
       } catch (error) {
         console.error('Erro ao criar espécie:', error);
-        const errosValidacao = error?.response?.data?.errors;
-        if (errosValidacao) {
-          const primeiraChave = Object.keys(errosValidacao)[0];
-          const primeiraMensagem = primeiraChave ? errosValidacao[primeiraChave][0] : null;
-          alert(primeiraMensagem || 'Dados inválidos para criar espécie.');
-          return;
-        }
-
-        const mensagem = error?.response?.data?.message;
-        alert(mensagem || 'Erro ao criar espécie. Verifique o console para mais detalhes.');
+        alert('Erro ao cadastrar nova espécie.');
       }
     },
+
     async buscarOcorrenciasPublicadas() {
       try {
         this.carregandoOcorrencias = true;
@@ -387,6 +451,7 @@ export default {
         this.carregandoOcorrencias = false;
       }
     },
+
     IrParaDetalhes(id_especie) {
       this.$router.push({ name: 'catalogo-detalhe', params: { id: id_especie } });
     }
@@ -412,6 +477,15 @@ export default {
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 15px rgba(0,0,0,0.08) !important;
+}
+.btn-editar-cat {
+  opacity: 0.6;
+  z-index: 10;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.btn-editar-cat:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
 }
 .modal.show {
   display: block !important;

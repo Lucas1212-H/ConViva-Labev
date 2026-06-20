@@ -5,6 +5,10 @@
         
         <h2 class="display-6 fw-normal mb-4 text-start">Login Organizacional</h2>
 
+        <div v-if="erroMensagem" class="alert alert-danger small py-2 rounded-3 text-start" role="alert">
+          {{ erroMensagem }}
+        </div>
+
         <form @submit.prevent="lidarComLogin">
           <div class="mb-3 text-start">
             <label for="email" class="form-label small fw-semibold mb-1">Email</label>
@@ -13,6 +17,7 @@
               id="email" 
               v-model="credenciais.email" 
               class="form-control input-custom py-2 shadow-sm" 
+              :disabled="carregando"
               required
             />
           </div>
@@ -22,15 +27,16 @@
             <input 
               type="password" 
               id="senha" 
-              v-model="credenciais.senha" 
-              class="form-control input-custom py-2 shadow-sm" 
+              v-model="credenciais.password" class="form-control input-custom py-2 shadow-sm" 
+              :disabled="carregando"
               required
             />
           </div>
 
           <div class="d-grid mb-3">
-            <button type="submit" class="btn btn-black py-2.5 rounded-pill fw-medium shadow-sm">
-              Entrar
+            <button type="submit" class="btn btn-black py-2.5 rounded-pill fw-medium shadow-sm" :disabled="carregando">
+              <span v-if="carregando" class="spinner-border spinner-border-sm me-2"></span>
+              {{ carregando ? 'Autenticando...' : 'Entrar' }}
             </button>
           </div>
         </form>
@@ -55,19 +61,41 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import axios from 'axios'
 
 const emit = defineEmits(['mudarTela', 'loginSucesso'])
 
+const carregando = ref(false)
+const erroMensagem = ref('')
 const credenciais = reactive({
   email: '',
-  senha: ''
+  password: ''
 })
 
-const lidarComLogin = () => {
-  console.log('Tentativa de login enviada:', credenciais)
-  // Aqui você integrará o Axios / Fetch enviando para sua API
-  emit('loginSucesso', credenciais)
+const lidarComLogin = async () => {
+  try {
+    carregando.value = true
+    erroMensagem.value = ''
+
+    const resultado = await login({
+      email: credenciais.email,
+      password: credenciais.password
+    })
+
+    if (resultado.sucesso) {
+      console.log('Login bem-sucedido:', resultado.user.tipo_conta)
+      emit('loginSucesso', resultado.user)
+      router.push({ name: 'specialist-area '})
+    } else {
+      erroMensagem.value = resultado.mensagem
+    }
+
+  } catch (error) {
+    erroMensagem.value = 'Erro de credenciais ou conexão com servidor.'
+  } finally {
+    carregando.value = false
+  }
 }
 
 const irParaCadastro = () => {
@@ -75,7 +103,7 @@ const irParaCadastro = () => {
 }
 
 const esqueciSenha = () => {
-  alert('Funcionalidade de recuperação de senha (simulação)!')
+  alert('Funcionalidade de recuperação de senha será implementada a seguir!')
 }
 </script>
 
