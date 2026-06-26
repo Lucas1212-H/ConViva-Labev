@@ -83,3 +83,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/contato', [ContatoController::class, 'enviarContato']);
+
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/gerar-link-storage', function () {
+    try {
+        Artisan::call('storage:link');
+        return response()->json(['mensagem' => 'Link criado com sucesso!']);
+    } catch (\Exception $e) {
+        return response()->json(['erro' => $e->getMessage()], 500);
+    }
+});
