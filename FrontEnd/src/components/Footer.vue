@@ -38,7 +38,7 @@
           <h5 class="fw-bold mb-4">Contato</h5>
           <ul class="list-unstyled contact-info">
             <li><i class="fas fa-envelope me-2"></i> contato@conviva.com</li>
-            <li><i class="fas fa-phone me-2"></i> (91) 99838-7277</li>
+            <li><i class="fas fa-phone me-2"></i>  (91) 99153-0025</li>
             <li><i class="fas fa-map-marker-alt me-2"></i> Belém, PA  - Brasil</li>
           </ul>
         </div>

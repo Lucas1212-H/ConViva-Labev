@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Middleware\CheckAdmin;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\Api\ContatoController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -80,3 +81,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
 });
+
+Route::post('/contato', [ContatoController::class, 'enviarContato']);

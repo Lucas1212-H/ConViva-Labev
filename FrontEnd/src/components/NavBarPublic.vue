@@ -3,11 +3,11 @@
     <div class="top-bar py-2 px-4 d-flex justify-content-between align-items-center text-white small">
       <div class="d-flex align-items-center">
         <i class="bi bi-envelope-fill me-2"></i>
-        <span>contato@conviva.com</span>
+        <span>convivalabev@gmail.com</span>
       </div>
       <div class="social-icons d-flex gap-3">
         <a href="https://www.instagram.com/conviva.labev/" target="_blank" class="text-white"><i class="bi bi-instagram"></i></a>
-        <a href="mailto:contato@conviva.com" class="text-white"><i class="bi bi-envelope"></i></a>
+        <a href="mailto:convivalabev@gmail.com" class="text-white"><i class="bi bi-envelope"></i></a>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
 
             <div class="d-flex flex-column lh-sm">
               <span class="fw-bold text-dark" style="font-size: 0.85rem;">Fale Conosco</span>
-              <span class="text-muted" style="font-size: 0.8rem;">(91) 99838-7277</span>
+              <span class="text-muted" style="font-size: 0.8rem;"> (91) 99153-0025</span>
             </div>
           </a>
 

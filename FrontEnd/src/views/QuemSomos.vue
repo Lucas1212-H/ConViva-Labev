@@ -43,11 +43,15 @@
             </h2>
             
             <p class="fs-5 text-secondary lh-lg mb-4">
-              O projeto <strong>ConViva</strong> atua de forma integrada como uma extensão essencial do Laboratório de Ecologia e Conservação de Vertebrados (LABEV) da Universidade Federal do Pará (UFPA).
+              O projeto <strong>ConViva LABEV</strong>, também denominado <em>“Entre Macacos, Sapos, Cobras e Lagartos Salvam-se Todos”</em>, atua como uma extensão essencial vinculada ao <strong>Laboratório de Ecologia e Zoologia dos Vertebrados</strong>, do Instituto de Ciências Biológicas da UFPA.
             </p>
             
+            <p class="text-body-secondary lh-lg mb-3">
+              Coordenado pela <strong>Professora Maria Cristina dos Santos Costa</strong> (carinhosamente conhecida como <strong>Professora Kita</strong>), o projeto foi idealizado no ano de 2000 para responder a um desafio real de coexistência no campus universitário, localizado no bairro do Guamá, em Belém. Após a ocorrência de dois acidentes ofídicos dentro da universidade, a coordenação estruturou uma rede para mitigar conflitos e garantir a segurança tanto da comunidade acadêmica quanto dos animais silvestres.
+            </p>
+
             <p class="text-body-secondary lh-lg mb-0">
-              Fundada originalmente no ano de 2000 pela iniciativa da <strong>Professora Kita</strong>, a organização nasceu de uma necessidade real de segurança e coexistência pacífica. Após um incidente de ataque de serpente envolvendo uma estudante no campus, a professora idealizou um canal técnico estruturado para capacitar a população acadêmica e do entorno a manejar encontros com animais silvestres corretamente, além de gerar dados científicos valiosos para a preservação das espécies amazônicas urbanas.
+              O campus da UFPA abriga ricas áreas de várzea e fragmentos florestais que fazem limite com importantes ecossistemas locais, como os da UFRA, do Museu Paraense Emílio Goeldi, da Embrapa e do Parque Estadual do Utinga. Essa forte conexão ecológica atrai espécies de jacarés, sucuris, capivaras, preguiças, quatis e macacos. Como define a colaboradora e doutoranda Iara Ramos, o ConViva é inovador e global justamente por trazer as pessoas como protagonistas da conservação e transformar a fauna silvestre em um ponto de união com o ambiente urbano.
             </p>
           </div>
         </div>

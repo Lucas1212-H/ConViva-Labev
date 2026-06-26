@@ -31,21 +31,22 @@
             <form @submit.prevent="handleSubmit">
               <div class="mb-3">
                 <label for="nome" class="form-label text-uppercase small fw-bold tracking-wider text-secondary">Nome Completo</label>
-                <input v-model="form.nome" id="nome" type="text" class="form-control rounded-0 p-3" placeholder="Insira seu nome" required />
+                <input v-model="form.nome" id="nome" type="text" class="form-control rounded-0 p-3" placeholder="Insira seu nome" :disabled="enviando" required />
               </div>
               
               <div class="mb-3">
                 <label for="email" class="form-label text-uppercase small fw-bold tracking-wider text-secondary">Endereço de E-mail</label>
-                <input v-model="form.email" id="email" type="email" class="form-control rounded-0 p-3" placeholder="seu@email.com" required />
+                <input v-model="form.email" id="email" type="email" class="form-control rounded-0 p-3" placeholder="seu@email.com" :disabled="enviando" required />
               </div>
               
               <div class="mb-4">
                 <label for="mensagem" class="form-label text-uppercase small fw-bold tracking-wider text-secondary">Sua Mensagem</label>
-                <textarea v-model="form.mensagem" id="mensagem" rows="5" class="form-control rounded-0 p-3" placeholder="Escreva detalhadamente o motivo do seu contato..." required></textarea>
+                <textarea v-model="form.mensagem" id="mensagem" rows="5" class="form-control rounded-0 p-3" placeholder="Escreva detalhadamente o motivo do seu contato..." :disabled="enviando" required></textarea>
               </div>
               
-              <button type="submit" class="btn btn-dark rounded-0 fw-bold text-uppercase tracking-wider px-5 py-3 w-100">
-                Enviar Mensagem
+              <button type="submit" class="btn btn-dark rounded-0 fw-bold text-uppercase tracking-wider px-5 py-3 w-100" :disabled="enviando">
+                <span v-if="enviando" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ enviando ? 'Enviando...' : 'Enviar Mensagem' }}
               </button>
             </form>
           </article>
@@ -100,10 +101,15 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import axios from 'axios' // Importado o Axios para a comunicação com a API
 import NavBarPublic from '@/components/NavBarPublic.vue'
 import Footer from '@/components/Footer.vue'
+
+// Configuração dinâmica da URL base igual à página de notícias
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE_URL = isLocal ? 'http://localhost:8000' : 'https://conviva-labev.onrender.com'
 
 const form = reactive({
   nome: '',
@@ -111,11 +117,32 @@ const form = reactive({
   mensagem: ''
 })
 
-const handleSubmit = () => {
-  alert(`Mensagem enviada com sucesso!\n\nNome: ${form.nome}\nEmail: ${form.email}`)
-  form.nome = ''
-  form.email = ''
-  form.mensagem = ''
+const enviando = ref(false)
+
+const handleSubmit = async () => {
+  try {
+    enviando.value = true
+    
+    // Dispara a requisição POST para o endpoint correspondente do seu backend
+    // Certifique-se de que a rota `/api/contato` (ou similar) esteja configurada no backend
+    await axios.post(`${API_BASE_URL}/api/contato`, {
+      nome: form.nome,
+      email: form.email,
+      mensagem: form.mensagem
+    })
+
+    alert('Mensagem enviada com sucesso! Entraremos em contacto em breve.')
+    
+    // Limpa o formulário após o envio bem-sucedido
+    form.nome = ''
+    form.email = ''
+    form.mensagem = ''
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error)
+    alert('Ocorreu um erro ao tentar enviar a mensagem. Por favor, tente novamente mais tarde.')
+  } finally {
+    enviando.value = false
+  }
 }
 </script>
 
