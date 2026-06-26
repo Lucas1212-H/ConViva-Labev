@@ -94,3 +94,28 @@ Route::get('/gerar-link-storage', function () {
         return response()->json(['erro' => $e->getMessage()], 500);
     }
 });
+
+use Illuminate\Support\Facades\File;
+
+Route::get('/configurar-producao', function () {
+    try {
+        // 1. Se o link antigo e quebrado já existir, nós removemo-lo primeiro
+        $linkPublico = public_path('storage');
+        if (File::exists($linkPublico) || is_link($linkPublico)) {
+            File::delete($linkPublico);
+        }
+
+        // 2. Executa o comando para criar o link simbólico correto
+        Artisan::call('storage:link');
+        
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Link do Storage criado com sucesso no ambiente de produção!'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'sucesso' => false,
+            'erro' => $e->getMessage()
+        ], 500);
+    }
+});
