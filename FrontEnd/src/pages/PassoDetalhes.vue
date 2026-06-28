@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-0 shadow-sm p-4 mx-auto" style="max-width: 360px; border-radius: 24px;">
+  <div class="card border-0 shadow-sm p-4 mx-auto passo-card" style="border-radius: 24px;">
     
     <div class="d-flex gap-1 mb-3">
       <div class="flex-grow-1 bg-success" style="height: 4px; border-radius: 2px;"></div>

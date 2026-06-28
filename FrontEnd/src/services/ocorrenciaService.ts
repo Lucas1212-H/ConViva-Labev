@@ -84,5 +84,20 @@ export const ocorrenciaService = {
       }
       throw error
     }
+  },
+
+  /**
+   * Lista as ocorrências mais recentes para exibição pública (sem dados de contato)
+   */
+  async listarRecentes() {
+    try {
+      const response = await api.get('/ocorrencias/recentes')
+      return Array.isArray(response.data) ? response.data : []
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || 'Erro ao buscar ocorrências recentes')
+      }
+      throw error
+    }
   }
 }

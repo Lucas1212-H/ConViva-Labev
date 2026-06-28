@@ -234,8 +234,21 @@ onMounted(() => {
 }
 
 @media (max-width: 991.98px) {
-  .hero-banner { min-height: 360px; }
+  .hero-banner { min-height: 320px; }
   .hero-banner .d-flex { flex-direction: column !important; align-items: flex-start !important; }
   .banner-text-right { max-width: 100%; margin-top: 1rem; }
+
+  .btn-filter {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 140px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .btn-filter {
+    flex: 1 1 100%;
+  }
 }
 </style>

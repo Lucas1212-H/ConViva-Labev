@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-0 shadow-sm p-3 p-sm-4 mx-auto passo-contato-card">
+  <div class="card border-0 shadow-sm p-3 p-sm-4 mx-auto passo-contato-card passo-card">
 
     <h1 class="h5 fw-bold text-dark mb-1">Seus dados</h1>
     <p class="small text-muted mb-3">Precisamos de um contato para retorno</p>
@@ -103,14 +103,6 @@ const enviar = () => {
 .form-control:focus { border-color: #198754; box-shadow: 0 0 0 0.15rem rgba(25,135,84,0.12); }
 
 .passo-contato-card {
-  max-width: 360px;
   border-radius: 20px;
-}
-
-@media (max-width: 767.98px) {
-  .passo-contato-card {
-    max-width: 100%;
-    padding: 1rem !important;
-  }
 }
 </style>

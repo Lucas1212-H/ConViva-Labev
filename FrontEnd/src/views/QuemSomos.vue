@@ -153,7 +153,9 @@ import Footer from '@/components/Footer.vue'
 }
 
 @media (max-width: 767.98px) {
-  .hero-banner { min-height: 320px; }
-  .display-3 { font-size: 2.25rem; }
+  .hero-banner { min-height: 300px; }
+  .display-3 { font-size: 2rem; }
+  .display-5 { font-size: 1.75rem; }
+  .ps-lg-4 { padding-left: 0 !important; }
 }
 </style>

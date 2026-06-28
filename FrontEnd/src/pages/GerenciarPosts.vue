@@ -1,7 +1,7 @@
 <template>
   <NavBar />
 
-  <main class="container my-5 text-start">
+  <main class="container my-4 my-md-5 px-3 px-md-4 text-start">
     <header class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
       <div>
         <h1 class="h4 fw-bold text-dark text-uppercase m-0">Gerenciar Publicações</h1>
@@ -62,12 +62,12 @@
       </form>
     </section>
 
-    <section class="border rounded-0 overflow-hidden shadow-sm">
+    <section class="border rounded-0 overflow-hidden shadow-sm table-mobile-scroll">
       <div v-if="carregando" class="text-center my-5">
         <div class="spinner-border text-dark rounded-0" role="status"></div>
       </div>
 
-      <table v-else class="table table-hover m-0 align-middle small text-uppercase">
+      <table v-else class="table table-hover m-0 align-middle small text-uppercase" style="min-width: 640px;">
         <thead class="table-dark">
           <tr>
             <th scope="col" class="ps-3 py-3">Título</th>

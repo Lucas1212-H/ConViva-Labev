@@ -162,6 +162,34 @@ class OcorrenciaController extends Controller
         }
     }
 
+    /**
+     * Lista ocorrências recentes para exibição pública (sem dados sensíveis de contato)
+     */
+    public function indexRecentes()
+    {
+        try {
+            $recentes = Ocorrencia::whereIn('status', ['Pendente', 'Em Atendimento', 'Publicado'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(fn($item) => [
+                    'id' => $item->id,
+                    'tipo_animal' => $item->tipo_animal,
+                    'distincao_biologica' => $item->distincao_biologica,
+                    'situacao_animal' => $item->situacao_animal,
+                    'status' => $item->status,
+                    'ponto_referencia' => $item->ponto_referencia,
+                    'created_at' => $item->created_at,
+                ]);
+
+            return response()->json($recentes, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao buscar ocorrências recentes: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function showPublicada($id)
     {
         try {

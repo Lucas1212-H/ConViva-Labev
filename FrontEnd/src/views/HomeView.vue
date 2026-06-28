@@ -43,7 +43,7 @@
 
       <section class="py-5 border-top text-start bg-white p-4 p-md-5 border mb-5 shadow-sm rounded-0">
         <div class="row align-items-center g-4">
-          <div class="col-lg-4 border-end border-md-0">
+          <div class="col-lg-4 border-end-lg">
             <span class="text-success text-uppercase fw-bold small tracking-wider">Protocolo de Segurança</span>
             <h2 class="fw-extrabold text-uppercase tracking-tight text-dark m-0 mt-1">Como agir ao encontrar um animal silvestre?</h2>
             <p class="text-secondary mt-3 mb-0 small lh-lg">
@@ -94,12 +94,12 @@
       </section>
 
       <section class="py-5 border-top text-start">
-        <div class="d-flex justify-content-between align-items-end mb-4">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-end mb-4 gap-3">
           <div>
             <span class="text-success text-uppercase fw-bold small tracking-wider">Fique por dentro</span>
             <h2 class="fw-extrabold text-uppercase m-0 tracking-tight text-dark">Últimas Notícias</h2>
           </div>
-          <button @click="$router.push('/noticias')" class="btn btn-sm btn-outline-dark rounded-0 text-uppercase fw-bold">Ver Blog →</button>
+          <button @click="$router.push('/noticias')" class="btn btn-sm btn-outline-dark rounded-0 text-uppercase fw-bold w-100 w-sm-auto">Ver Blog →</button>
         </div>
 
         <div v-if="carregandoNoticias" class="text-center py-4">
@@ -114,7 +114,7 @@
           <div class="carousel-inner">
             <div v-for="(grupo, idx) in noticiasAgrupadas" :key="idx" class="carousel-item" :class="{ active: idx === 0 }">
               <div class="row g-4">
-                <article v-for="post in grupo" :key="post.id" class="col-md-4" @click="$router.push(`/noticias/${post.id}`)" style="cursor: pointer;">
+                <article v-for="post in grupo" :key="post.id" class="col-12 col-sm-6 col-lg-4" @click="$router.push(`/noticias/${post.id}`)" style="cursor: pointer;">
                   <div class="card h-100 border rounded-0 shadow-sm card-noticia-hover bg-white">
                     <img :src="post.imagem_url || 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&q=80'" class="card-img-top rounded-0 border-bottom" style="height: 200px; object-fit: cover;" alt="Banner da notícia" />
                     <div class="card-body p-4 d-flex flex-column justify-content-between">
@@ -244,9 +244,9 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import NavBarPublic from '@/components/NavBarPublic.vue'
 import Footer from '@/components/Footer.vue'
+import { useBreakpoint } from '@/composables/useBreakpoint'
 
 interface PublicadoMapa {
   id: number
@@ -280,23 +280,20 @@ const publicados = ref<PublicadoMapa[]>([])
 
 const animaisExibidos = computed(() => animaisCatalogados.value.slice(0, MAX_ANIMAIS_CARROSSEL))
 
-const animaisAgrupados = computed(() => {
-  const grupos = []
-  const tamanhoGrupo = 3
-  for (let i = 0; i < animaisExibidos.value.length; i += tamanhoGrupo) {
-    grupos.push(animaisExibidos.value.slice(i, i + tamanhoGrupo))
-  }
-  return grupos
-})
+const { carouselGroupSize } = useBreakpoint()
 
-const noticiasAgrupadas = computed(() => {
-  const grupos = []
-  const tamanhoGrupo = 3
-  for (let i = 0; i < noticias.value.length; i += tamanhoGrupo) {
-    grupos.push(noticias.value.slice(i, i + tamanhoGrupo))
+const agruparItens = <T,>(itens: T[]) => {
+  const grupos: T[][] = []
+  const tamanhoGrupo = carouselGroupSize.value
+  for (let i = 0; i < itens.length; i += tamanhoGrupo) {
+    grupos.push(itens.slice(i, i + tamanhoGrupo))
   }
   return grupos
-})
+}
+
+const animaisAgrupados = computed(() => agruparItens(animaisExibidos.value))
+
+const noticiasAgrupadas = computed(() => agruparItens(noticias.value))
 
 let map: L.Map | null = null
 const markerGroup = L.layerGroup()
@@ -459,7 +456,26 @@ onMounted(async () => {
 }
 
 @media (max-width: 767.98px) {
-  .hero-banner { min-height: 400px; }
-  #mapa-fauna { min-height: 300px !important; }
+  .hero-banner {
+    min-height: 360px;
+  }
+
+  .hero-banner .fs-4 {
+    font-size: 1.1rem !important;
+  }
+
+  #mapa-fauna {
+    min-height: 280px !important;
+  }
+
+  .hero-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .border-end-lg {
+    border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+  }
 }
 </style>

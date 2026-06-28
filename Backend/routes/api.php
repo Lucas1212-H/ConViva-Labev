@@ -37,6 +37,7 @@ Route::post('/ocorrencias', [OcorrenciaController::class, 'store']);
 Route::get('/ocorrencias/pendentes', [OcorrenciaController::class, 'indexPendentes']);
 Route::get('/ocorrencias/arquivadas', [OcorrenciaController::class, 'indexArquivadas']);
 Route::get('/ocorrencias/publicados', [OcorrenciaController::class, 'indexPublicados']);
+Route::get('/ocorrencias/recentes', [OcorrenciaController::class, 'indexRecentes']);
 Route::get('/ocorrencias/{id}', [OcorrenciaController::class, 'showPublicada']);
 Route::put('/ocorrencias/{id}/avaliar', [OcorrenciaController::class, 'avaliar']);
 Route::put('/ocorrencias/{id}/publicar', [OcorrenciaController::class, 'publicar']);
@@ -94,7 +95,7 @@ Route::get('/gerar-link-storage', function () {
         return response()->json(['erro' => $e->getMessage()], 500);
     }
 });
-
+ 
 use Illuminate\Support\Facades\File;
 
 Route::get('/configurar-producao', function () {

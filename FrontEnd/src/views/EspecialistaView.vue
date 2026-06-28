@@ -2,7 +2,7 @@
   <div class="dashboard-page bg-light min-vh-100 d-flex flex-column">
     <NavBar :abaAtiva="abaAtiva" @mudarAba="mudarAba" />
 
-    <div class="container-fluid px-4 flex-grow-1 py-4">
+    <div class="container-fluid px-3 px-md-4 flex-grow-1 py-3 py-md-4">
       
       <div v-if="carregando" class="text-center py-5 my-auto">
         <div class="spinner-border text-success" role="status"></div>
@@ -64,6 +64,7 @@ import ModalHistoricoAnimal from '@/components/especialista/ModalHistoricoAnimal
 import TriagemPainel from '@/pages/especialista/TriagemPainel.vue';
 import HistoricoPainel from '@/pages/especialista/HistoricoPainel.vue';
 import PublicadosPainel from '@/pages/especialista/PublicadosPainel.vue';
+import { exportarLaudoOcorrencia } from '@/utils/exportLaudo';
 
 const selectedDenuncia = ref(null);
 const historicoSelecionado = ref(null);
@@ -98,11 +99,16 @@ const buscarDadosDoBanco = async () => {
       titulo: `${item.distincao_biologica} de ${item.tipo_animal}`,
       denunciante: item.denunciante_nome,
       tipo: item.distincao_biologica,
+      distincao_biologica: item.distincao_biologica,
       descricao: item.descricao,
       imagem: item.foto_path ? `${STORAGE_BASE}/${item.foto_path}` : 'https://picsum.photos/seed/fauna/640/360',
       local: item.ponto_referencia,
       data: new Date(item.created_at).toLocaleDateString('pt-BR'),
+      created_at: item.created_at,
+      situacao_animal: item.situacao_animal,
       status: item.situacao_animal,
+      statusWorkflow: item.status,
+      parecer_tecnico: item.parecer_tecnico,
       assigned: item.parecer_tecnico ? 'Especialista' : null,
       coordenadas: { lat: item.latitude !== null ? parseFloat(item.latitude) : null, lng: item.longitude !== null ? parseFloat(item.longitude) : null }
     }));
@@ -238,6 +244,11 @@ const handlePublicarHistorico = async (item) => {
   }
 };
 
-const gerarLaudo = (d) => { alert(`Gerando Laudo Técnico em PDF para: ${d.animal}`); };
+const gerarLaudo = (denuncia) => {
+  const exportado = exportarLaudoOcorrencia(denuncia);
+  if (!exportado) {
+    alert('Não foi possível abrir a janela de exportação. Verifique se o bloqueador de pop-ups está desativado.');
+  }
+};
 const handleGerenciarEspecies = () => console.log('Gerenciar Espécies');
 </script>

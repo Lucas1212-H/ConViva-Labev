@@ -14,7 +14,7 @@
           </div>
         </div>
 
-        <div class="col-lg-2 ms-auto">
+        <div class="col-lg-2 ms-lg-auto">
           <h5 class="fw-bold mb-4">Plataforma</h5>
           <ul class="list-unstyled footer-links">
             <li><RouterLink to="/">Início</RouterLink></li>
@@ -73,4 +73,26 @@
   transition: 0.3s; 
 }
 .social-links a:hover { color: #2ecc71; }
+
+@media (max-width: 767.98px) {
+  .footer-professional {
+    text-align: center;
+  }
+
+  .footer-professional .col-lg-4,
+  .footer-professional .col-lg-2,
+  .footer-professional .col-lg-3 {
+    text-align: center;
+  }
+
+  .social-links {
+    justify-content: center;
+    display: flex;
+  }
+
+  .footer-links,
+  .contact-info {
+    padding-left: 0;
+  }
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <NavBarPublic />
 
-  <main v-if="!carregando && post" class="container my-5 text-start" style="max-width: 800px;">
+  <main v-if="!carregando && post" class="container px-3 px-md-4 my-4 my-md-5 text-start post-detail">
     
     <header class="mb-4">
       <span class="badge rounded-0 text-uppercase tracking-wider px-3 py-2 mb-2" :class="corBadge(post.tipo)">
@@ -102,4 +102,18 @@ onMounted(() => {
 <style scoped>
 .rounded-0 { border-radius: 0 !important; }
 .tracking-wider { letter-spacing: 0.08em; }
+
+.post-detail {
+  max-width: 800px;
+}
+
+@media (max-width: 767.98px) {
+  .post-detail .display-5 {
+    font-size: 1.75rem !important;
+  }
+
+  .post-detail .fs-5 {
+    font-size: 1rem !important;
+  }
+}
 </style>

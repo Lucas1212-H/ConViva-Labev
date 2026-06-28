@@ -1,5 +1,5 @@
 <template>
-  <div class="card border-0 shadow-sm p-4 mx-auto" style="max-width: 360px; border-radius: 24px;">
+  <div class="card border-0 shadow-sm p-4 mx-auto passo-card" style="border-radius: 24px;">
     
     <h1 class="h4 fw-bold text-dark mb-1">Olá, denunciante</h1>
     <p class="small text-muted mb-4">Campus UFPA — O quê você observou?</p>
@@ -42,38 +42,13 @@
 
     </div>
 
-    <div class="text-uppercase text-muted fw-bold mt-2 mb-2" style="font-size: 0.7rem; letter-spacing: 0.8px;">
-      Últimas ocorrências
-    </div>
-    
-    <div class="d-flex flex-column">
-      
-      <div class="d-flex align-items-center py-3 border-bottom border-light">
-        <div class="d-flex align-items-center justify-content-center rounded-circle me-3 bg-danger bg-opacity-10" style="width: 32px; height: 32px;">
-           
-        </div>
-        <div class="flex-grow-1">
-          <h4 class="m-0 small fw-medium text-dark" style="font-size: 14px;">Serpente — Bloco A</h4>
-          <p class="m-0 text-muted" style="font-size: 11px;">há 12 min · Não resolvido</p>
-        </div>
-        <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger fw-bold" style="font-size: 10px; padding: 4px 8px;">Urgente</span>
-      </div>
-
-      <div class="d-flex align-items-center py-3">
-        <div class="d-flex align-items-center justify-content-center rounded-circle me-3 bg-success bg-opacity-10" style="width: 32px; height: 32px;">
-           
-        </div>
-        <div class="flex-grow-1">
-          <h4 class="m-0 small fw-medium text-dark" style="font-size: 14px;">Ave ferida — Estacionamento</h4>
-          <p class="m-0 text-muted" style="font-size: 11px;">há 2h · Em atendimento</p>
-        </div>
-      </div>
-
-    </div>
+    <UltimasOcorrencias />
   </div>
 </template>
 
 <script setup>
+import UltimasOcorrencias from '@/components/denuncia/UltimasOcorrencias.vue'
+
 const emit = defineEmits(['proximo'])
 
 const selecionar = (categoria) => {

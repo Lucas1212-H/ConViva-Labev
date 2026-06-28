@@ -5,9 +5,9 @@
     <main class="container py-5">
       
       <section v-if="!categoriaSelecionada">
-        <header class="d-flex justify-content-between align-items-center mb-4">
+        <header class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
           <h1 class="h3 fw-bold text-dark m-0">Catálogo de Categorias</h1>
-          <button v-if="eAdmin" class="btn btn-success fw-medium px-4" @click="modalNovaCategoria = true">
+          <button v-if="eAdmin" class="btn btn-success fw-medium px-4 w-100 w-sm-auto" @click="modalNovaCategoria = true">
             + Nova Categoria
           </button>
         </header>
@@ -44,15 +44,15 @@
       </section>
 
       <section v-else>
-        <header class="d-flex justify-content-between align-items-center mb-4">
-          <div>
+        <header class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
+          <div class="w-100">
             <button class="btn btn-sm btn-light border px-3 mb-2" @click="categoriaSelecionada = null">
               ← Voltar
             </button>
             <h1 class="h3 fw-bold text-success m-0">Espécies em {{ categoriaSelecionada.nome_popular }}</h1>
           </div>
           
-          <button v-if="eAdmin" class="btn btn-primary fw-medium px-4" @click="modalNovaEspecie = true">
+          <button v-if="eAdmin" class="btn btn-primary fw-medium px-4 w-100 w-sm-auto" @click="modalNovaEspecie = true">
             + Nova Espécie
           </button>
         </header>

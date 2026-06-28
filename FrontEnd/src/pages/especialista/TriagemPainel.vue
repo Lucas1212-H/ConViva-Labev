@@ -13,7 +13,7 @@
       <div class="data-card p-4 h-100 shadow-sm">
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <h4 class="fw-bold m-0 text-dark">Fila de Triagem</h4>
-          <div class="input-group w-auto">
+          <div class="input-group search-group">
             <span class="input-group-text bg-white border-0 shadow-sm">
               <i class="fas fa-search text-muted"></i>
             </span>
@@ -129,5 +129,20 @@ const getStatusClass = (status) => {
 }
 .action-btn { 
   border-radius: 0.55rem; 
+}
+
+@media (max-width: 767.98px) {
+  .search-group {
+    width: 100% !important;
+  }
+
+  .data-card {
+    padding: 1rem !important;
+  }
+
+  .action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
 }
 </style>

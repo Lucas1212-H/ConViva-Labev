@@ -244,12 +244,17 @@ const voltarParaInicio = () => {
 
 @media (max-width: 767.98px) {
   .mix-container {
-    max-width: calc(100vw - 24px);
+    max-width: calc(100vw - 16px);
     margin: 0 auto;
+    border-radius: 1rem !important;
   }
 
   .container-passos {
     max-width: 100%;
+  }
+
+  .corpo-formulario {
+    padding: 1rem !important;
   }
 }
 

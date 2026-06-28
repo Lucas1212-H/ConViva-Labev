@@ -196,7 +196,11 @@ const handleSubmit = async () => {
 }
 
 @media (max-width: 767.98px) {
-  .hero-banner { min-height: 320px; }
-  .display-3 { font-size: 2.25rem; }
+  .hero-banner { min-height: 300px; }
+  .display-3 { font-size: 2rem; }
+
+  .card .col-sm-4 {
+    min-height: 120px !important;
+  }
 }
 </style>

@@ -8,7 +8,7 @@
           <small class="text-muted">Abaixo estão mapeadas todas as ocorrências validadas e publicadas no campus</small>
         </header>
 
-        <div id="mapa-fauna" class="rounded-4 shadow-sm mb-4" style="height: 400px; width: 100%;"></div>
+        <div id="mapa-fauna" class="rounded-4 shadow-sm mb-4 mapa-publicados"></div>
 
         <div class="table-responsive bg-white rounded-4 shadow-sm p-2">
           <table class="table table-hover align-middle mb-0">
@@ -122,4 +122,19 @@ onMounted(() => {
 .clickable-row { cursor: pointer; }
 .clickable-row:hover { background: #f4f7f4; }
 .text-mono { font-family: monospace; }
+
+.mapa-publicados {
+  height: 400px;
+  width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .mapa-publicados {
+    height: 280px;
+  }
+
+  .map-card {
+    padding: 1rem !important;
+  }
+}
 </style>

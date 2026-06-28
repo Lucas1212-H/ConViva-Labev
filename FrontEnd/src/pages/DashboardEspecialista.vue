@@ -77,6 +77,7 @@ import NavBar from '@/components/NavBar.vue';
 import CardsMetricas from '@/components/especialista/CardsMetricas.vue';
 import PainelAnalise from '@/components/especialista/PainelAnalise.vue';
 import ModalValidacao from '@/components/especialista/ModalValidacao.vue';
+import { exportarLaudoOcorrencia } from '@/utils/exportLaudo';
 import axios from 'axios';
 
 // Identifica se está rodando localmente ou no Render
@@ -129,7 +130,25 @@ const processarAprovacao = async (denuncia, aprovado) => {
 };
 
 const gerarLaudo = (denuncia) => {
-  alert(`Gerar laudo para denúncia ID: ${denuncia.id}`);
+  const exportado = exportarLaudoOcorrencia({
+    id: denuncia.id,
+    tipo_animal: denuncia.tipo_animal ?? denuncia.animal,
+    distincao_biologica: denuncia.distincao_biologica,
+    situacao_animal: denuncia.situacao_animal ?? denuncia.status,
+    statusWorkflow: denuncia.status,
+    denunciante_nome: denuncia.denunciante_nome ?? denuncia.denunciante,
+    ponto_referencia: denuncia.ponto_referencia ?? denuncia.local,
+    descricao: denuncia.descricao ?? denuncia.descricao_ocorrencia,
+    created_at: denuncia.created_at,
+    parecer_tecnico: denuncia.parecer_tecnico,
+    latitude: denuncia.latitude,
+    longitude: denuncia.longitude,
+    imagem: denuncia.foto_path ? `${API_BASE_URL}/storage/${denuncia.foto_path}` : undefined,
+  });
+
+  if (!exportado) {
+    alert('Não foi possível abrir a janela de exportação. Verifique se o bloqueador de pop-ups está desativado.');
+  }
 };
 
 const handleVerArquivados = () => {

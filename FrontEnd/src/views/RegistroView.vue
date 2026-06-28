@@ -123,4 +123,21 @@ const handleRegister = async () => {
 .auth-card { background-color: #9cdb81; border-radius: 40px; }
 .auth-title { font-weight: 700; font-size: 2.5rem; }
 .custom-input { background: rgba(255,255,255,0.5); border: none; border-radius: 15px; }
+
+@media (max-width: 767.98px) {
+  .auth-card {
+    border-radius: 24px;
+    padding: 1.5rem !important;
+  }
+
+  .auth-title {
+    font-size: 2rem;
+  }
+
+  .register-page {
+    padding: 1rem;
+    align-items: flex-start !important;
+    padding-top: 2rem;
+  }
+}
 </style>

@@ -143,4 +143,17 @@ const handleLogin = async () => {
   flex-wrap: wrap;
   gap: 1rem;
 }
+
+@media (max-width: 767.98px) {
+  .auth-card {
+    border-radius: 24px;
+    padding: 1.5rem !important;
+  }
+
+  .login-page {
+    padding: 1rem;
+    align-items: flex-start !important;
+    padding-top: 2rem;
+  }
+}
 </style>

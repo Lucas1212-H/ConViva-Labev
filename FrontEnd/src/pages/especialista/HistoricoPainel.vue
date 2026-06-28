@@ -89,4 +89,14 @@ defineEmits(['selecionarHistorico']);
 .process-badge { 
   border-radius: 999px; 
 }
+
+@media (max-width: 767.98px) {
+  .archived-card {
+    padding: 1rem !important;
+  }
+
+  header small {
+    font-size: 0.75rem;
+  }
+}
 </style>
