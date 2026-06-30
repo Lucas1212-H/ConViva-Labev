@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Support\StorageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
@@ -45,9 +46,10 @@ class PostController extends Controller
             if ($request->hasFile('imagem') && $request->file('imagem')->isValid()) {
                 
                 if ($post->imagem_url) {
-                    // Extrai o nome do arquivo a partir da URL guardada
-                    $nomeArquivo = str_replace(asset('storage/'), '', $post->imagem_url);
-                    Storage::disk('public')->delete($nomeArquivo);
+                    $nomeArquivo = StorageUrl::pathFromUrl($post->getRawOriginal('imagem_url'));
+                    if ($nomeArquivo) {
+                        Storage::disk('public')->delete($nomeArquivo);
+                    }
                 }
 
                 // Salva a nova imagem
@@ -91,8 +93,10 @@ class PostController extends Controller
 
             // 🔥 Apaga a foto associada do disco antes de deletar o post
             if ($post->imagem_url) {
-                $nomeArquivo = str_replace(asset('storage/'), '', $post->imagem_url);
-                Storage::disk('public')->delete($nomeArquivo);
+                $nomeArquivo = StorageUrl::pathFromUrl($post->getRawOriginal('imagem_url'));
+                if ($nomeArquivo) {
+                    Storage::disk('public')->delete($nomeArquivo);
+                }
             }
 
             $post->delete();

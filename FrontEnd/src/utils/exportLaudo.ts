@@ -1,3 +1,5 @@
+import { resolveStorageUrl } from './mediaUrl'
+
 export interface DadosLaudo {
   id?: number | string
   tipoAnimal?: string
@@ -50,7 +52,7 @@ function normalizar(dados: DadosLaudo) {
     dataRegistro: dados.dataRegistro ?? dados.created_at ?? dados.data ?? new Date().toISOString(),
     parecer: dados.parecerTecnico ?? dados.parecer_tecnico ?? 'Parecer pendente de avaliação técnica.',
     coordenadas: lat != null && lng != null ? `${lat}, ${lng}` : 'Não informado',
-    imagem: dados.imagem ?? '',
+    imagem: resolveStorageUrl(dados.imagem ?? ''),
   }
 }
 

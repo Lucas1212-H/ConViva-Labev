@@ -67,7 +67,7 @@
             </span>
 
             <img 
-              :src="post.imagem_url || 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&q=80'" 
+              :src="resolveStorageUrl(post.imagem_url, FALLBACK_POST_IMAGE)" 
               class="card-img-top rounded-0 border-bottom" 
               style="height: 240px; object-fit: cover;"
               alt="Capa da publicação"
@@ -103,8 +103,10 @@ import axios from 'axios'
 import NavBarPublic from '@/components/NavBarPublic.vue'
 import Footer from '@/components/Footer.vue'
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-const API_BASE_URL = isLocal ? 'http://localhost:8000' : 'https://conviva-labev.onrender.com'
+import { resolveStorageUrl, getApiBaseUrl } from '@/utils/mediaUrl'
+
+const FALLBACK_POST_IMAGE = 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&q=80'
+const API_BASE_URL = getApiBaseUrl()
 const posts = ref([])
 const carregando = ref(true)
 const filtroAtivo = ref('Todos')

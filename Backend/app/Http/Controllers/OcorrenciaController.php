@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ocorrencia;
+use App\Support\StorageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -136,6 +137,7 @@ class OcorrenciaController extends Controller
             'descricao' => $ocorrencia->descricao_ocorrencia,
             'descricao_ocorrencia' => $ocorrencia->descricao_ocorrencia,
             'foto_path' => $ocorrencia->foto_path,
+            'foto_url' => StorageUrl::publicUrl($ocorrencia->foto_path),
             'ponto_referencia' => $ocorrencia->ponto_referencia,
             'created_at' => $ocorrencia->created_at,
             'updated_at' => $ocorrencia->updated_at,

@@ -222,12 +222,9 @@ import NavBar from '@/components/NavBar.vue';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { getApiBaseUrl, resolveStorageUrl } from '@/utils/mediaUrl';
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-const API_BASE_URL = isLocal 
-  ? 'http://localhost:8000' 
-  : 'https://conviva-labev.onrender.com';
+const API_BASE_URL = getApiBaseUrl();
 
 export default {
   components: {
@@ -274,15 +271,8 @@ export default {
     obterImagemUrlTratada(item) {
       const fallback = 'https://picsum.photos/seed/fauna/300/200';
       if (!item) return fallback;
-      
-      const nomeArquivo = item.foto || item.imagem;
-      if (!nomeArquivo) return fallback;
-      
-      if (nomeArquivo.startsWith('http')) return nomeArquivo;
-      
-      const nomeLimpo = nomeArquivo.replace(/^public\//, '');
-      
-      return `${API_BASE_URL}/storage/${nomeLimpo}`;
+
+      return resolveStorageUrl(item.foto || item.imagem, fallback);
     },
 
     async buscarDadosDoCatalogo() {

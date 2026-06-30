@@ -116,7 +116,7 @@
               <div class="row g-4">
                 <article v-for="post in grupo" :key="post.id" class="col-12 col-sm-6 col-lg-4" @click="$router.push(`/noticias/${post.id}`)" style="cursor: pointer;">
                   <div class="card h-100 border rounded-0 shadow-sm card-noticia-hover bg-white">
-                    <img :src="post.imagem_url || 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&q=80'" class="card-img-top rounded-0 border-bottom" style="height: 200px; object-fit: cover;" alt="Banner da notícia" />
+                    <img :src="resolveStorageUrl(post.imagem_url, FALLBACK_POST_IMAGE)" class="card-img-top rounded-0 border-bottom" style="height: 200px; object-fit: cover;" alt="Banner da notícia" />
                     <div class="card-body p-4 d-flex flex-column justify-content-between">
                       <div>
                         <span class="badge rounded-0 text-uppercase mb-2" :class="post.tipo === 'Noticia' ? 'bg-success' : 'bg-secondary'">{{ post.tipo }}</span>
@@ -247,6 +247,7 @@ import 'leaflet/dist/leaflet.css'
 import NavBarPublic from '@/components/NavBarPublic.vue'
 import Footer from '@/components/Footer.vue'
 import { useBreakpoint } from '@/composables/useBreakpoint'
+import { getApiBaseUrl, resolveStorageUrl } from '@/utils/mediaUrl'
 
 interface PublicadoMapa {
   id: number
@@ -268,9 +269,9 @@ const carregandoMapa = ref(true)
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const router = useRouter()
 
-const API_BASE = isLocal ? 'http://localhost:8000/api' : 'https://conviva-labev.onrender.com/api'
-const STORAGE_BASE = isLocal ? 'http://localhost:8000/storage' : 'https://conviva-labev.onrender.com/storage'
+const API_BASE = `${getApiBaseUrl()}/api`
 const FALLBACK_IMAGE = 'https://cdn-icons-png.flaticon.com/512/616/616408.png'
+const FALLBACK_POST_IMAGE = 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=600&q=80'
 const MAX_ANIMAIS_CARROSSEL = 9
 
 const carregandoAnimaisCatalogados = ref(true)
@@ -326,10 +327,9 @@ const carregarAnimaisCatalogados = async () => {
 
     animaisCatalogados.value = response.data.map((especie) => {
       const nomeFoto = normalizarTexto(especie.foto)
-      let urlImagem = FALLBACK_IMAGE
-      if (nomeFoto) {
-        urlImagem = isLocal ? `${STORAGE_BASE}/${nomeFoto}` : `${STORAGE_BASE}/${nomeFoto.replace(/^public\//, '')}`
-      }
+      const urlImagem = nomeFoto
+        ? resolveStorageUrl(nomeFoto, FALLBACK_IMAGE)
+        : FALLBACK_IMAGE
       return {
         id: especie.id_especie,
         nome: normalizarTexto(especie.nome_popular) || 'Espécie sem nome popular',
