@@ -73,7 +73,7 @@ class OcorrenciaController extends Controller
     public function indexArquivadas()
     {
         try {
-            $ocorrencias = Ocorrencia::whereIn('status', ['Resolvido', 'Falso Alarme', 'Em Atendimento'])
+            $ocorrencias = Ocorrencia::whereIn('status', ['Resolvido', 'Falso Alarme', 'Em Atendimento', 'Publicado'])
                 ->orderBy('updated_at', 'desc')
                 ->get()
                 ->map(fn ($item) => $this->mapearOcorrencia($item));
@@ -98,7 +98,7 @@ class OcorrenciaController extends Controller
             }
 
             $request->validate([
-                'status' => 'required|in:Pendente,Em Atendimento,Resolvido,Falso Alarme',
+                'status' => 'required|in:Pendente,Em Atendimento,Resolvido,Falso Alarme,Publicado',
                 'parecer_tecnico' => 'nullable|string',
             ]);
 
@@ -133,6 +133,7 @@ class OcorrenciaController extends Controller
             'created_at' => $ocorrencia->created_at,
             'updated_at' => $ocorrencia->updated_at,
             'status' => $ocorrencia->status,
+            'publicado_no_mapa' => (bool) $ocorrencia->publicado_no_mapa,
             'situacao_animal' => $ocorrencia->situacao_animal,
             'parecer_tecnico' => $ocorrencia->parecer_tecnico,
             'latitude' => $ocorrencia->latitude,
@@ -144,6 +145,7 @@ class OcorrenciaController extends Controller
     {
         try {
             $publicados = Ocorrencia::where('status', 'Publicado')
+                ->where('publicado_no_mapa', true)
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(fn ($item) => $this->mapearOcorrencia($item));
@@ -215,7 +217,10 @@ class OcorrenciaController extends Controller
                 ], 404);
             }
 
-            $ocorrencia->update(['status' => 'Publicado']);
+            $ocorrencia->update([
+                'status' => 'Publicado',
+                'publicado_no_mapa' => true,
+            ]);
 
             return response()->json([
                 'message' => 'Ocorrência publicada com sucesso!',
@@ -224,6 +229,32 @@ class OcorrenciaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Erro ao publicar: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function despublicar($id)
+    {
+        try {
+            $ocorrencia = Ocorrencia::where('id', $id)->first();
+
+            if (! $ocorrencia) {
+                return response()->json([
+                    'error' => 'Ocorrência não encontrada',
+                ], 404);
+            }
+
+            $ocorrencia->update([
+                'publicado_no_mapa' => false,
+            ]);
+
+            return response()->json([
+                'message' => 'Ocorrência removida do mapa com sucesso!',
+                'data' => $this->mapearOcorrencia($ocorrencia),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao remover do mapa: '.$e->getMessage(),
             ], 500);
         }
     }

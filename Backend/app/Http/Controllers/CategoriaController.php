@@ -22,7 +22,16 @@ class CategoriaController extends Controller
 
     public function show(int $id)
     {
-        $categoria = Categoria::with('especies')->where('id_categoria', $id)->first();
+        $categoria = Categoria::with([
+            'especies' => function ($query) {
+                $query->orderBy('nome_popular');
+            },
+            'especies.ocorrencias' => function ($query) {
+                $query->select('id', 'especie_id', 'latitude', 'longitude', 'situacao_animal', 'ponto_referencia', 'created_at')
+                    ->whereNotNull('latitude')
+                    ->whereNotNull('longitude');
+            },
+        ])->where('id_categoria', $id)->first();
 
         if (! $categoria) {
             return response()->json(['message' => 'Categoria não encontrada'], 404);
