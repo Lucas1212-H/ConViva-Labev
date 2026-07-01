@@ -2,7 +2,7 @@
   <div class="dashboard-page bg-light min-vh-100 d-flex flex-column">
     <NavBar :abaAtiva="abaAtiva" @mudarAba="mudarAba" />
 
-    <div class="container-fluid px-3 px-md-4 flex-grow-1 py-3 py-md-4">
+    <div class="container-fluid specialist-content px-3 px-md-4 flex-grow-1 py-3 py-md-4">
       
       <div v-if="carregando" class="text-center py-5 my-auto">
         <div class="spinner-border text-success" role="status"></div>
@@ -65,6 +65,9 @@ import TriagemPainel from '@/pages/especialista/TriagemPainel.vue';
 import HistoricoPainel from '@/pages/especialista/HistoricoPainel.vue';
 import PublicadosPainel from '@/pages/especialista/PublicadosPainel.vue';
 import { exportarLaudoOcorrencia } from '@/utils/exportLaudo';
+import { resolveStorageUrl } from '@/utils/mediaUrl';
+
+const FALLBACK_OCORRENCIA_IMAGE = 'https://picsum.photos/seed/fauna/640/360';
 
 const selectedDenuncia = ref(null);
 const historicoSelecionado = ref(null);
@@ -82,7 +85,6 @@ const publicadosLista = ref([]);
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
 const API_BASE = isLocal ? 'http://localhost:8000/api/ocorrencias' : 'https://conviva-labev.onrender.com/api/ocorrencias';
-const STORAGE_BASE = isLocal ? 'http://localhost:8000/storage' : 'https://conviva-labev.onrender.com/storage';
 
 const buscarDadosDoBanco = async () => {
   try {
@@ -101,7 +103,7 @@ const buscarDadosDoBanco = async () => {
       tipo: item.distincao_biologica,
       distincao_biologica: item.distincao_biologica,
       descricao: item.descricao,
-      imagem: item.foto_path ? `${STORAGE_BASE}/${item.foto_path}` : 'https://picsum.photos/seed/fauna/640/360',
+      imagem: resolveStorageUrl(item.foto_url || item.foto_path, FALLBACK_OCORRENCIA_IMAGE),
       local: item.ponto_referencia,
       data: new Date(item.created_at).toLocaleDateString('pt-BR'),
       created_at: item.created_at,
@@ -118,7 +120,7 @@ const buscarDadosDoBanco = async () => {
       animal: item.tipo_animal,
       denunciante: item.denunciante_nome,
       distincaoBiologica: item.distincao_biologica,
-      imagem: item.foto_path ? `${STORAGE_BASE}/${item.foto_path}` : 'https://picsum.photos/seed/fauna/640/360',
+      imagem: resolveStorageUrl(item.foto_url || item.foto_path, FALLBACK_OCORRENCIA_IMAGE),
       local: item.ponto_referencia,
       data: new Date(item.created_at).toLocaleDateString('pt-BR'),
       statusFinal: item.status,
@@ -252,3 +254,11 @@ const gerarLaudo = (denuncia) => {
 };
 const handleGerenciarEspecies = () => console.log('Gerenciar Espécies');
 </script>
+
+<style scoped>
+.specialist-content {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+</style>

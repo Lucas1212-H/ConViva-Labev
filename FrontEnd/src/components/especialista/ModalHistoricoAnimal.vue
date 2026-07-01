@@ -11,7 +11,7 @@
 
       <div class="row g-3">
         <div class="col-md-5">
-          <img :src="getImagemUrl(item)" alt="Imagem do animal" class="img-fluid rounded-3 history-image">
+          <img :src="resolveStorageUrl(item?.imagem || item?.foto, FALLBACK_IMAGE)" alt="Imagem do animal" class="img-fluid rounded-3 history-image">
           <div class="info-box mt-3">
             <div><strong>Denunciante:</strong> {{ item.denunciante || item.reporter || 'Anônimo' }}</div>
             <div><strong>Data:</strong> {{ item.data || item.date || '-' }}</div>
@@ -52,19 +52,10 @@
 </template>
 
 <script setup>
+import { resolveStorageUrl } from '@/utils/mediaUrl'
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const STORAGE_BASE = isLocal
-  ? 'http://localhost:8000/storage/'
-  : 'https://conviva-labev.onrender.com/storage/';
+const FALLBACK_IMAGE = 'https://picsum.photos/640/420'
 
-const getImagemUrl = (denuncia) => {
-  if (!denuncia) return 'https://picsum.photos/640/420';
-  const nomeArquivo = denuncia.foto || denuncia.imagem;
-  if (!nomeArquivo) return 'https://picsum.photos/640/420';
-  if (nomeArquivo.startsWith('http')) return nomeArquivo;
-  return `${STORAGE_BASE}/${nomeArquivo}`;
-};
 defineProps({
   item: Object
 })

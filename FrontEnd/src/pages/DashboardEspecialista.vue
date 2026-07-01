@@ -78,6 +78,7 @@ import CardsMetricas from '@/components/especialista/CardsMetricas.vue';
 import PainelAnalise from '@/components/especialista/PainelAnalise.vue';
 import ModalValidacao from '@/components/especialista/ModalValidacao.vue';
 import { exportarLaudoOcorrencia } from '@/utils/exportLaudo';
+import { resolveStorageUrl } from '@/utils/mediaUrl';
 import axios from 'axios';
 
 // Identifica se está rodando localmente ou no Render
@@ -143,7 +144,7 @@ const gerarLaudo = (denuncia) => {
     parecer_tecnico: denuncia.parecer_tecnico,
     latitude: denuncia.latitude,
     longitude: denuncia.longitude,
-    imagem: denuncia.foto_path ? `${API_BASE_URL}/storage/${denuncia.foto_path}` : undefined,
+    imagem: resolveStorageUrl(denuncia.foto_url || denuncia.foto_path),
   });
 
   if (!exportado) {

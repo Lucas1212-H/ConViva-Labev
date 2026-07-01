@@ -3,9 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+<<<<<<< HEAD
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+=======
+use App\Support\StorageUrl;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+>>>>>>> e8f18aa5555b5bb8e59f191e476179617b797940
 
 class PostController extends Controller
 {
@@ -28,7 +35,7 @@ class PostController extends Controller
             ], 500);
         }
     }
-
+    
     public function update(Request $request, $id)
     {
         if (auth()->user()->tipo_conta !== 'Administrador') {
@@ -47,8 +54,15 @@ class PostController extends Controller
             ]);
 
             if ($request->hasFile('imagem') && $request->file('imagem')->isValid()) {
+<<<<<<< HEAD
                 $this->cloudinary->deleteByUrl($post->imagem_url);
                 $post->imagem_url = $this->cloudinary->upload($request->file('imagem'), 'posts');
+=======
+                $resultadoUpload = Cloudinary::upload($request->file('imagem')->getRealPath(), [
+                    'folder' => 'posts'
+                ]);
+                $post->imagem_url = $resultadoUpload->getSecurePath();
+>>>>>>> e8f18aa5555b5bb8e59f191e476179617b797940
             }
 
             $post->titulo = $dados['titulo'];
@@ -80,7 +94,19 @@ class PostController extends Controller
 
         try {
             $post = Post::findOrFail($id);
+<<<<<<< HEAD
             $this->cloudinary->deleteByUrl($post->imagem_url);
+=======
+
+            // 🔥 Apaga a foto associada do disco antes de deletar o post
+            if ($post->imagem_url) {
+                $nomeArquivo = StorageUrl::pathFromUrl($post->getRawOriginal('imagem_url'));
+                if ($nomeArquivo) {
+                    Storage::disk('public')->delete($nomeArquivo);
+                }
+            }
+
+>>>>>>> e8f18aa5555b5bb8e59f191e476179617b797940
             $post->delete();
 
             return response()->json(['message' => 'Publicação excluída com sucesso!'], 200);
@@ -107,7 +133,14 @@ class PostController extends Controller
             $imagemUrl = null;
 
             if ($request->hasFile('imagem') && $request->file('imagem')->isValid()) {
+<<<<<<< HEAD
                 $imagemUrl = $this->cloudinary->upload($request->file('imagem'), 'posts');
+=======
+                $resultadoUpload = Cloudinary::upload($request->file('imagem')->getRealPath(), [
+                    'folder' => 'posts'
+                ]);
+                $dados['imagem_url'] = $resultadoUpload->getSecurePath();
+>>>>>>> e8f18aa5555b5bb8e59f191e476179617b797940
             }
 
             $post = Post::create([

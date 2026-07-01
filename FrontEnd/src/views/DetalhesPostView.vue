@@ -15,7 +15,7 @@
     </header>
 
     <img 
-      :src="post.imagem_url || 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80'" 
+      :src="resolveStorageUrl(post.imagem_url, FALLBACK_POST_IMAGE)" 
       class="img-fluid border mb-4 w-100" 
       style="max-height: 450px; object-fit: cover;"
       alt="Banner da publicação"
@@ -60,8 +60,10 @@ const post = ref(null)
 const discouraged = ref(false)
 const carregando = ref(true)
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-const API_BASE_URL = isLocal ? 'http://localhost:8000' : 'https://conviva-labev.onrender.com'
+import { resolveStorageUrl, getApiBaseUrl } from '@/utils/mediaUrl'
+
+const FALLBACK_POST_IMAGE = 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80'
+const API_BASE_URL = getApiBaseUrl()
 
 const carregarDetalhes = async () => {
   try {
@@ -70,13 +72,8 @@ const carregarDetalhes = async () => {
     
     const response = await axios.get(`${API_BASE_URL}/api/posts`)
     
-    // Certifica-se de extrair o array de forma segura, não importa como venha do Laravel
     const todosPosts = Array.isArray(response.data) ? response.data : response.data.data || []
-    
-    // 🟢 Usamos dois sinais de igual (==) para ignorar diferenças de string/número
     post.value = todosPosts.find(p => p.id == id)
-    
-    console.log('Post encontrado:', post.value) // Monitoramento no console F12
   } catch (error) {
     console.error('Erro ao abrir detalhes:', error)
   } finally {

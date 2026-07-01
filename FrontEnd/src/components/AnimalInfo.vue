@@ -30,7 +30,7 @@
           <aside class="info-card media-card" aria-label="Imagem da espécie">
             <img
               class="animal-image"
-              :src="animal.foto ? `http://localhost:8000/storage/${animal.foto}` : 'https://picsum.photos/seed/fauna/400/300'"
+              :src="resolveStorageUrl(animal.foto, 'https://picsum.photos/seed/fauna/400/300')"
               :alt="`Imagem de ${animal.nome_popular}`"
             />
           </aside>
@@ -96,13 +96,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import axios from 'axios';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { getApiBaseUrl, resolveStorageUrl } from '@/utils/mediaUrl';
 
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-// Configura a URL base da API dinamicamente baseado no ambiente
-const API_BASE_URL = isLocal 
-  ? 'http://localhost:8000' 
-  : 'https://conviva-labev.onrender.com';
+const API_BASE_URL = getApiBaseUrl();
 
 export default {
   components: {
@@ -113,7 +109,7 @@ export default {
         carregando: true, // começa verdadeira para esperar o banco responder
         animal: null, // aqui guardará os dados do animal
     mapaInstance: null,
-    erro: null
+    erro: null,
     }
   },
   computed: {
@@ -144,6 +140,7 @@ export default {
     }
   },
   methods: {
+    resolveStorageUrl,
     async carregarDadosDaEspecie() {
         try {
           // pegamos o ID do animal diretamente da URL
