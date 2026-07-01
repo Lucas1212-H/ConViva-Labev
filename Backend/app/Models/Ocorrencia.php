@@ -27,6 +27,7 @@ class Ocorrencia extends Model
         'ponto_referencia',
         'foto_path',
         'status',
+        'publicado_no_mapa',
         'parecer_tecnico',
     ];
 }

@@ -41,6 +41,7 @@ Route::get('/ocorrencias/recentes', [OcorrenciaController::class, 'indexRecentes
 Route::get('/ocorrencias/{id}', [OcorrenciaController::class, 'showPublicada']);
 Route::put('/ocorrencias/{id}/avaliar', [OcorrenciaController::class, 'avaliar']);
 Route::put('/ocorrencias/{id}/publicar', [OcorrenciaController::class, 'publicar']);
+Route::put('/ocorrencias/{id}/despublicar', [OcorrenciaController::class, 'despublicar']);
 
 Route::get('/categorias', [CategoriaController::class, 'index']);
 Route::post('/categorias', [CategoriaController::class, 'store']);

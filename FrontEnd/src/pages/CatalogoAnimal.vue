@@ -57,19 +57,48 @@
           </button>
         </header>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
           <div class="col" v-for="especie in (categoriaSelecionada?.especies || [])" :key="especie.id_especie">
-            <article class="card h-100 shadow-sm border-0 overflow-hidden rounded-3" style="cursor: pointer;" @click="IrParaDetalhes(especie.id_especie)">
+            <article class="card especie-card h-100 shadow-sm border-0 overflow-hidden rounded-3" style="cursor: pointer;" @click="IrParaDetalhes(especie.id_especie)">
+              <div v-if="eAdmin" class="species-actions">
+                <button
+                  class="btn btn-sm btn-light border shadow-sm me-2"
+                  title="Editar espécie"
+                  @click.stop="prepararEdicaoEspecie(especie)"
+                >
+                  ✏️
+                </button>
+                <button
+                  class="btn btn-sm btn-light border shadow-sm text-danger"
+                  title="Excluir espécie"
+                  @click.stop="confirmarExclusaoEspecie(especie)"
+                >
+                  🗑️
+                </button>
+              </div>
+
               <img 
                 :src="obterImagemUrlTratada(especie)" 
                 :alt="especie.nome_popular" 
                 class="card-img-top object-fit-cover"
                 style="height: 180px;"
               >
-              <div class="card-body p-3">
-                <h2 class="h5 fw-bold text-dark mb-1">{{ especie.nome_popular }}</h2>
-                <small class="text-muted fst-italic d-block mb-2">{{ especie.nome_cientifico }}</small>
-                <p class="text-secondary small m-0">{{ especie.descricao }}</p>
+              <div class="card-body p-3 d-flex flex-column gap-3">
+                <div>
+                  <h2 class="h5 fw-bold text-dark mb-1">{{ especie.nome_popular }}</h2>
+                  <small class="text-muted fst-italic d-block mb-2">{{ especie.nome_cientifico }}</small>
+                  <p class="text-secondary small m-0">{{ especie.descricao }}</p>
+                </div>
+
+                <div class="species-map-wrap" @click.stop>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-uppercase fw-semibold text-muted">Mapa da espécie</small>
+                    <span class="badge rounded-pill bg-success-subtle text-success-emphasis">
+                      {{ especie.ocorrencias?.length || 0 }} pontos
+                    </span>
+                  </div>
+                  <EspecieMapaPreview :ocorrencias="especie.ocorrencias || []" />
+                </div>
               </div>
             </article>
           </div>
@@ -134,11 +163,60 @@
               <small class="text-muted">Deixe em branco se preferir manter a imagem atual.</small>
             </div>
           </div>
+          <div class="modal-footer justify-content-between flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-danger" @click="excluirCategoriaEditando">Excluir Categoria</button>
+            <div class="d-flex gap-2 ms-auto">
+              <button type="button" class="btn btn-secondary" @click="modalEditarCategoria = false">Cancelar</button>
+              <button type="button" class="btn btn-primary" @click="salvarEdicaoCategoria" :disabled="salvandoCategoria">
+                <span v-if="salvandoCategoria" class="spinner-border spinner-border-sm me-1"></span>
+                Atualizar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" :class="{ show: modalEditarEspecie }" :style="{ display: modalEditarEspecie ? 'block' : 'none' }" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title">Editar Espécie</h5>
+            <button type="button" class="btn-close btn-close-white" @click="modalEditarEspecie = false"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nome Científico</label>
+                <input type="text" class="form-control" v-model="formEditarEspecie.nome_cientifico">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Nome Popular</label>
+                <input type="text" class="form-control" v-model="formEditarEspecie.nome_popular">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" v-model="formEditarEspecie.id_categoria">
+                  <option v-for="cat in listaCategorias" :key="cat.id_categoria" :value="cat.id_categoria">
+                    {{ cat.nome_popular }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Descrição</label>
+                <textarea class="form-control" v-model="formEditarEspecie.descricao" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Substituir Foto</label>
+                <input type="file" class="form-control" @change="handleFotoEditarEspecieChange" accept="image/*">
+              </div>
+            </div>
+          </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="modalEditarCategoria = false">Cancelar</button>
-            <button type="button" class="btn btn-primary" @click="salvarEdicaoCategoria" :disabled="salvandoCategoria">
-              <span v-if="salvandoCategoria" class="spinner-border spinner-border-sm me-1"></span>
-              Atualizar
+            <button type="button" class="btn btn-secondary" @click="modalEditarEspecie = false">Cancelar</button>
+            <button type="button" class="btn btn-success" @click="salvarEdicaoEspecie" :disabled="salvandoEspecie">
+              <span v-if="salvandoEspecie" class="spinner-border spinner-border-sm me-1"></span>
+              Atualizar Espécie
             </button>
           </div>
         </div>
@@ -213,7 +291,7 @@
       </div>
     </div>
 
-    <div class="modal-backdrop fade" :class="{ show: modalNovaCategoria || modalNovaEspecie || modalEditarCategoria }" v-if="modalNovaCategoria || modalNovaEspecie || modalEditarCategoria"></div>
+    <div class="modal-backdrop fade" :class="{ show: modalNovaCategoria || modalNovaEspecie || modalEditarCategoria || modalEditarEspecie }" v-if="modalNovaCategoria || modalNovaEspecie || modalEditarCategoria || modalEditarEspecie"></div>
   </div>
 </template>
 
@@ -223,12 +301,14 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { getApiBaseUrl, resolveStorageUrl } from '@/utils/mediaUrl';
+import EspecieMapaPreview from '@/components/especialista/EspecieMapaPreview.vue';
 
 const API_BASE_URL = getApiBaseUrl();
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    EspecieMapaPreview
   },
   data() {
     return {
@@ -237,7 +317,9 @@ export default {
       modalNovaCategoria: false,
       modalNovaEspecie: false,
       modalEditarCategoria: false, // Controle do modal de edição
+      modalEditarEspecie: false,
       salvandoCategoria: false,
+      salvandoEspecie: false,
       carregandoOcorrencias: false,
       ocorrenciasPublicadas: [],
       ocorrenciasSelecionadas: [],
@@ -250,6 +332,14 @@ export default {
         id_categoria: null,
         nome_cientifico: '',
         nome_popular: '',
+        foto: null
+      },
+      formEditarEspecie: {
+        id_especie: null,
+        id_categoria: null,
+        nome_cientifico: '',
+        nome_popular: '',
+        descricao: '',
         foto: null
       },
       formEspecie: {
@@ -350,7 +440,7 @@ export default {
       this.modalEditarCategoria = true;
     },
 
-    // 🚀 Envia a atualização da categoria para a API do Laravel
+    //  Envia a atualização da categoria para a API do Laravel
     async salvarEdicaoCategoria() {
       try {
         this.salvandoCategoria = true;
@@ -378,6 +468,103 @@ export default {
         alert('Erro ao atualizar a categoria.');
       } finally {
         this.salvandoCategoria = false;
+      }
+    },
+
+    async excluirCategoriaEditando() {
+      const id = this.formEditarCategoria.id_categoria;
+      if (!id) return;
+
+      if (!confirm('Excluir esta categoria também removerá as espécies vinculadas. Deseja continuar?')) {
+        return;
+      }
+
+      try {
+        await axios.delete(`${API_BASE_URL}/api/categorias/${id}`);
+        this.modalEditarCategoria = false;
+        this.formEditarCategoria = { id_categoria: null, nome_cientifico: '', nome_popular: '', foto: null };
+        this.categoriaSelecionada = null;
+        await this.buscarDadosDoCatalogo();
+        alert('Categoria excluída com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir categoria:', error);
+        alert('Erro ao excluir a categoria.');
+      }
+    },
+
+    prepararEdicaoEspecie(especie) {
+      this.formEditarEspecie.id_especie = especie.id_especie;
+      this.formEditarEspecie.id_categoria = especie.id_categoria || this.categoriaSelecionada?.id_categoria || this.categoriaSelecionada?.id;
+      this.formEditarEspecie.nome_cientifico = especie.nome_cientifico;
+      this.formEditarEspecie.nome_popular = especie.nome_popular;
+      this.formEditarEspecie.descricao = especie.descricao || '';
+      this.formEditarEspecie.foto = null;
+      this.modalEditarEspecie = true;
+    },
+
+    handleFotoEditarEspecieChange(event) {
+      this.formEditarEspecie.foto = event.target.files[0] || null;
+    },
+
+    async salvarEdicaoEspecie() {
+      try {
+        this.salvandoEspecie = true;
+        const id = this.formEditarEspecie.id_especie;
+
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('id_categoria', String(this.formEditarEspecie.id_categoria));
+        formData.append('nome_cientifico', this.formEditarEspecie.nome_cientifico);
+        formData.append('nome_popular', this.formEditarEspecie.nome_popular);
+        formData.append('descricao', this.formEditarEspecie.descricao || '');
+
+        if (this.formEditarEspecie.foto) {
+          formData.append('foto', this.formEditarEspecie.foto);
+        }
+
+        await axios.post(`${API_BASE_URL}/api/especies/${id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        this.modalEditarEspecie = false;
+        this.formEditarEspecie = {
+          id_especie: null,
+          id_categoria: null,
+          nome_cientifico: '',
+          nome_popular: '',
+          descricao: '',
+          foto: null
+        };
+
+        if (this.categoriaSelecionada) {
+          await this.selecionarCategoria(this.categoriaSelecionada);
+        }
+
+        alert('Espécie atualizada com sucesso!');
+      } catch (error) {
+        console.error('Erro ao editar espécie:', error);
+        alert('Erro ao atualizar a espécie.');
+      } finally {
+        this.salvandoEspecie = false;
+      }
+    },
+
+    async confirmarExclusaoEspecie(especie) {
+      if (!confirm(`Excluir a espécie "${especie.nome_popular}"? As ocorrências vinculadas permanecerão no sistema sem vínculo.`)) {
+        return;
+      }
+
+      try {
+        await axios.delete(`${API_BASE_URL}/api/especies/${especie.id_especie}`);
+
+        if (this.categoriaSelecionada) {
+          await this.selecionarCategoria(this.categoriaSelecionada);
+        }
+
+        alert('Espécie excluída com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir espécie:', error);
+        alert('Erro ao excluir espécie.');
       }
     },
     
@@ -473,6 +660,22 @@ export default {
   opacity: 1 !important;
   transform: scale(1.1);
 }
+
+.especie-card {
+  position: relative;
+}
+
+.species-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 5;
+}
+
+.species-map-wrap {
+  cursor: default;
+}
+
 .modal.show {
   display: block !important;
   background-color: rgba(0, 0, 0, 0.5);

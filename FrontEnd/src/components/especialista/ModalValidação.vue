@@ -5,7 +5,6 @@
         <h4 class="modal-title-custom">
           {{ denuncia.titulo || ('Validar Ocorrência: ' + (denuncia.animal || 'Sem título')) }}
         </h4>
-        <button class="btn btn-sm btn-light border" @click="$emit('fechar')">Fechar</button>
       </div>
 
       <div class="modal-body-custom">

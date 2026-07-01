@@ -40,9 +40,13 @@
             <p class="mb-0 text-muted">{{ item.resumoFinal || 'Processo concluído e enviado para arquivamento.' }}</p>
           </div>
 
-          <div v-if="item.statusFinal === 'Resolvido' || item.status === 'Resolvido'" class="mt-3 d-grid">
-            <button class="btn btn-outline-info fw-semibold" @click="$emit('publicar', item)">
-               Publicar no Mapa
+          <div v-if="item.statusFinal === 'Resolvido' || item.status === 'Resolvido' || item.statusFinal === 'Publicado'" class="mt-3 d-grid gap-2">
+            <button
+              class="btn fw-semibold"
+              :class="item.publicadoNoMapa ? 'btn-outline-danger' : 'btn-outline-info'"
+              @click="$emit('publicar', item)"
+            >
+               {{ item.publicadoNoMapa ? 'Tirar do Mapa' : 'Publicar no Mapa' }}
             </button>
           </div>
         </div>

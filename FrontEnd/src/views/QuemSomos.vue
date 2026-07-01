@@ -39,10 +39,10 @@
           <div class="ps-lg-4">
             <span class="text-success text-uppercase fw-bold small tracking-wider mb-2 d-block">Origem do Projeto</span>
             <h2 class="display-5 fw-extrabold text-uppercase tracking-tight text-dark mb-4 lh-tight">
-              Ciência Cidadã e Apoio à <span class="fw-light text-lowercase text-capitalize text-success-light">Fauna</span> Local
+              Ciência Cidadã e Apoio à Fauna Local
             </h2>
             
-            <p class="fs-5 text-secondary lh-lg mb-4">
+            <p class="fs-6 text-secondary lh-lg mb-4">
               O projeto <strong>ConViva LABEV</strong>, também denominado <em>“Entre Macacos, Sapos, Cobras e Lagartos Salvam-se Todos”</em>, atua como uma extensão essencial vinculada ao <strong>Laboratório de Ecologia e Zoologia dos Vertebrados</strong>, do Instituto de Ciências Biológicas da UFPA.
             </p>
             
@@ -55,7 +55,6 @@
             </p>
           </div>
         </div>
-
       </section>
 
       <section class="py-5 border-top">
