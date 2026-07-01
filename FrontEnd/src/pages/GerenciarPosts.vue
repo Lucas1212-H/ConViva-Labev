@@ -223,7 +223,9 @@ const salvarPost = async () => {
     fecharFormulario()
     buscarPosts()
   } catch (error) {
-    mensagemErro.value = error.response?.data?.message || 'Erro ao salvar publicação.'
+    const data = error.response?.data
+    const errosValidacao = data?.errors ? Object.values(data.errors).flat().join(' ') : ''
+    mensagemErro.value = errosValidacao || data?.error_real || data?.error || data?.message || 'Erro ao salvar publicação.'
   } finally {
     salvando.value = false
   }
