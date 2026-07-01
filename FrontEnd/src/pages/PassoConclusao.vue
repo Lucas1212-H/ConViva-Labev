@@ -1,43 +1,46 @@
 <template>
-  <div class="conclusao-container text-center">
-    
-    <div class="conclusao-icon mb-4">
-      <div class="icon-check">✓</div>
-    </div>
-
-    <h1 class="h3 fw-bold text-dark mb-3">Obrigado!</h1>
-    
-    <p class="text-muted mb-4 lead">
-      Sua ocorrência foi registrada com sucesso e ajudará no cuidado da fauna local.
-    </p>
-
-    <div class="info-box bg-light border rounded-3 p-4 mb-4">
-      <h2 class="h5 fw-semibold text-dark mb-3"> Acompanhe nas redes sociais</h2>
-      <p class="small text-muted mb-3">
-        Fique por dentro das ações do Programa ConViva! Siga nossas redes sociais para receber atualizações sobre o trabalho de resgate e conservação.
-      </p>
+  <div class="conclusao-shell">
+    <div class="conclusao-container text-center">
       
-      <div class="social-links d-flex justify-content-center gap-2 flex-wrap">
-        <a href="https://www.instagram.com/conviva.labev/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary rounded-3 px-3">
-          📷 Instagram
-        </a>
+      <div class="conclusao-icon mb-4">
+        <div class="icon-check">✓</div>
       </div>
-    </div>
 
-    <div class="actions d-flex flex-column gap-2">
-      <button 
-        class="btn btn-success fw-bold py-3 rounded-3 w-100"
-        @click="enviarNovaOcorrencia"
-      >
-        ➔ Enviar uma nova ocorrência
-      </button>
+      <h1 class="h3 fw-bold text-dark mb-3">Obrigado!</h1>
       
-      <button 
-        class="btn btn-outline-secondary fw-bold py-3 rounded-3 w-100"
-        @click="voltarParaInicio"
-      >
-        ← Voltar à tela inicial
-      </button>
+      <p class="text-muted mb-4 lead">
+        Sua ocorrência foi registrada com sucesso e ajudará no cuidado da fauna local.
+      </p>
+
+      <div class="info-box bg-light border rounded-3 p-4 mb-4">
+        <h2 class="h5 fw-semibold text-dark mb-3">Acompanhe nas redes sociais</h2>
+        <p class="small text-muted mb-3">
+          Fique por dentro das ações do Programa ConViva! Siga nossas redes sociais para receber atualizações sobre o trabalho de resgate e conservação.
+        </p>
+        
+        <div class="social-links d-flex justify-content-center gap-2 flex-wrap">
+          <a href="https://www.instagram.com/conviva.labev/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary rounded-3 px-3 d-inline-flex align-items-center">
+            <i class="bi bi-instagram me-2"></i>
+            Instagram
+          </a>
+        </div>
+      </div>
+
+      <div class="actions d-flex flex-column gap-2">
+        <button 
+          class="btn btn-success fw-bold py-3 rounded-3 w-100"
+          @click="enviarNovaOcorrencia"
+        >
+          ➔ Enviar uma nova ocorrência
+        </button>
+        
+        <button 
+          class="btn btn-outline-secondary fw-bold py-3 rounded-3 w-100"
+          @click="voltarParaInicio"
+        >
+          ← Voltar à tela inicial
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -58,8 +61,17 @@ const voltarParaInicio = () => {
 </script>
 
 <style scoped>
+.conclusao-shell {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
 .conclusao-container {
-  max-width: 380px;
+  width: min(100%, 560px);
   margin: 0 auto;
   animation: slideIn 0.4s ease-out;
 }
@@ -115,5 +127,16 @@ const voltarParaInicio = () => {
 
 .btn:hover {
   transform: translateY(-1px);
+}
+
+@media (min-width: 992px) {
+  .conclusao-shell {
+    min-height: calc(100vh - 220px);
+    padding: 2rem;
+  }
+
+  .conclusao-container {
+    width: min(100%, 640px);
+  }
 }
 </style>

@@ -93,14 +93,21 @@ defineEmits(['validar', 'exportar', 'gerenciarEspecies']);
 
 const filtro = ref('');
 
+const normalizarTexto = (valor) => String(valor ?? '')
+	.normalize('NFD')
+	.replace(/[\u0300-\u036f]/g, '')
+	.toLowerCase();
+
 const denunciasFiltradas = computed(() => {
   if (!props.denuncias) return [];
   if (!filtro.value.trim()) return props.denuncias;
-  const termo = filtro.value.toLowerCase();
+  const termo = normalizarTexto(filtro.value);
   return props.denuncias.filter(d => 
-    d.animal?.toLowerCase().includes(termo) || 
-    d.local?.toLowerCase().includes(termo) ||
-    d.denunciante?.toLowerCase().includes(termo)
+    normalizarTexto(d.animal).includes(termo) || 
+    normalizarTexto(d.local).includes(termo) ||
+    normalizarTexto(d.denunciante).includes(termo) ||
+    normalizarTexto(d.status).includes(termo) ||
+    normalizarTexto(d.titulo).includes(termo)
   );
 });
 

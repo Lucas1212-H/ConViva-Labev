@@ -177,6 +177,8 @@ const fazerLogout = () => {
   gap: 4px;
   width: 100%;
   max-width: 560px;
+  flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .nav-pill-scroll {
@@ -289,7 +291,7 @@ const fazerLogout = () => {
   }
 
   .navbar-especialista {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
     grid-template-areas:
       'brand brand user'
       'nav nav nav';
@@ -299,20 +301,41 @@ const fazerLogout = () => {
   .navbar-brand-container {
     justify-self: start;
   }
+
+  .nav-pill-container {
+    justify-self: center;
+  }
+
+  .user-section {
+    justify-self: end;
+  }
 }
 
 @media (min-width: 992px) {
   .navbar-especialista {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(220px, 1fr) minmax(0, 640px) minmax(220px, 1fr);
     grid-template-areas: 'brand nav user';
     height: 80px;
     padding: 0 1.5rem;
     gap: 1rem;
   }
 
+  .navbar-brand-container {
+    justify-self: start;
+  }
+
+  .nav-pill-container {
+    justify-self: center;
+  }
+
+  .user-section {
+    justify-self: end;
+  }
+
   .nav-pill-bg {
     padding: 8px 15px;
     margin: 0 auto;
+    width: min(100%, 640px);
   }
 
   .brand-text {

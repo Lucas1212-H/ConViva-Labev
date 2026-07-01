@@ -26,6 +26,7 @@
           v-else-if="abaAtiva === 'arquivadas'"
           :arquivadas="denunciasArquivadas"
           @selecionarHistorico="abrirHistorico"
+          @alternarPublicacao="alternarPublicacaoArquivada"
         />
 
         <PublicadosPainel 
@@ -124,7 +125,10 @@ const buscarDadosDoBanco = async () => {
       local: item.ponto_referencia,
       data: new Date(item.created_at).toLocaleDateString('pt-BR'),
       statusFinal: item.status,
-      processoFinal: item.status === 'Resolvido' ? 'Resgate > Arquivamento' : 'Falso Alarme > Descarte',
+      publicadoNoMapa: !!item.publicado_no_mapa,
+      processoFinal: item.status === 'Publicado'
+        ? (item.publicado_no_mapa ? 'Publicado no mapa' : 'Publicado fora do mapa')
+        : (item.status === 'Resolvido' ? 'Resgate > Arquivamento' : 'Falso Alarme > Descarte'),
       historico: [
         { titulo: 'Denúncia recebida', data: new Date(item.created_at).toLocaleDateString('pt-BR'), descricao: item.descricao },
         { titulo: 'Finalizado', data: new Date(item.updated_at).toLocaleDateString('pt-BR'), descricao: item.parecer_tecnico || 'Sem parecer.' }
@@ -231,14 +235,38 @@ const handlePublicar = async ({ denunciaId }) => {
   }
 };
 
+const alternarPublicacaoArquivada = async (item) => {
+  try {
+    if (item.publicadoNoMapa) {
+      await axios.put(`${API_BASE}/${item.id}/despublicar`)
+      alert('Ocorrência removida do mapa!')
+    } else {
+      await axios.put(`${API_BASE}/${item.id}/publicar`, {
+        status: 'Publicado'
+      })
+      alert('Ocorrência publicada no mapa!')
+    }
+
+    await buscarDadosDoBanco()
+  } catch (error) {
+    console.error(error)
+    alert('Erro ao atualizar a publicação da ocorrência.')
+  }
+}
+
 const handlePublicarHistorico = async (item) => {
   try {
-    await axios.put(`${API_BASE}/${item.id}/publicar`, {
-      status: 'Publicado'
-    });
+    if (item.publicadoNoMapa) {
+      await axios.put(`${API_BASE}/${item.id}/despublicar`)
+      alert('Ocorrência removida do mapa!')
+    } else {
+      await axios.put(`${API_BASE}/${item.id}/publicar`, {
+        status: 'Publicado'
+      })
+      alert('Ocorrência publicada no mapa!')
+    }
+
     historicoSelecionado.value = null;
-    abaAtiva.value = 'publicados';
-    alert('Ocorrência publicada no mapa!  ');
     await buscarDadosDoBanco();
   } catch (error) {
     alert('Erro ao publicar.');
