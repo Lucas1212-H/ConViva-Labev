@@ -29,6 +29,12 @@
         <button
           type="button"
           class="nav-item-link nav-button"
+          :class="{ active: abaAtiva === 'analises' }"
+          @click="selecionarAba('analises')"
+        >Análises</button>
+        <button
+          type="button"
+          class="nav-item-link nav-button"
           :class="{ active: abaAtiva === 'postagens' }"
           @click="selecionarAba('postagens')"
         >Postagens</button>
@@ -37,7 +43,6 @@
 
     <div class="user-section">
       <div class="user-info d-none d-md-block">
-        <small class="user-name">{{ usuarioLogado?.nome || 'Usuário' }}</small>
       </div>
       <div class="dropdown">
         <button
@@ -55,7 +60,7 @@
             <RouterLink class="dropdown-item" :to="{ name: 'editar-perfil' }">Editar Perfil</RouterLink>
           </li>
           <li v-if="isAdmin">
-            <RouterLink class="dropdown-item text-warning fw-semibold" :to="{ name: 'aprovar-usuario' }">Gerenciar Usuários</RouterLink>
+            <RouterLink class="dropdown-item " :to="{ name: 'aprovar-usuario' }">Gerenciar Usuários</RouterLink>
           </li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item text-danger" href="#" @click.prevent="fazerLogout">Sair</a></li>

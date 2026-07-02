@@ -99,7 +99,7 @@
             <span class="text-success text-uppercase fw-bold small tracking-wider">Fique por dentro</span>
             <h2 class="fw-extrabold text-uppercase m-0 tracking-tight text-dark">Últimas Notícias</h2>
           </div>
-          <button @click="$router.push('/noticias')" class="btn btn-sm btn-outline-dark rounded-0 text-uppercase fw-bold w-100 w-sm-auto">Ver Blog →</button>
+          <button @click="$router.push('/blog')" class="btn btn-sm btn-outline-dark rounded-0 text-uppercase fw-bold w-100 w-sm-auto">Ver Blog →</button>
         </div>
 
         <div v-if="carregandoNoticias" class="text-center py-4">
@@ -194,7 +194,7 @@
           <div class="col-lg-6">
             <span class="text-success text-uppercase fw-bold small tracking-wider">Conheça o Laboratório</span>
             <h2 class="fw-extrabold text-uppercase tracking-tight text-dark mb-4">O Projeto ConViva Labev</h2>
-            <p class="fs-5 text-secondary lh-lg mb-4">
+            <p class="fs-6 text-secondary lh-lg mb-4">
               O <strong>ConViva Labev</strong> é um projeto inovador de coexistência e conservação dos animais silvestres que habitam o campus universitário da UFPA (bairro do Guamá, Belém).
             </p>
             <p class="text-secondary lh-lg small mb-3">
