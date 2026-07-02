@@ -15,10 +15,6 @@
             <h1 class="animal-title mb-2">{{ animal.nome_popular }}</h1>
             <p class="animal-scientific mb-0">{{ animal.nome_cientifico }}</p>
           </div>
-
-          <button class="btn btn-success fw-semibold px-4 py-2" @click="editarInformacoes">
-            Editar
-          </button>
         </header>
 
         <div class="animal-grid">

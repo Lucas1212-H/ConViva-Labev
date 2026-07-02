@@ -6,7 +6,7 @@
       
       <div v-if="carregando" class="text-center py-5 my-auto">
         <div class="spinner-border text-success" role="status"></div>
-        <p class="text-muted mt-2">Buscando informações no phpMyAdmin...</p>
+        <p class="text-muted mt-2">Carregando informações...</p>
       </div>
 
       <div v-else class="flex-grow-1">

@@ -49,7 +49,7 @@
                 class="badge rounded-pill px-3 py-2 fs-7"
                 :class="tipoConta === 'Administrador' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'"
               >
-                💼 Perfil {{ tipoConta }}
+                Perfil {{ tipoConta }}
               </span>
             </div>
 

@@ -16,7 +16,7 @@
         role="button"
       >
         <div class="d-flex align-items-center justify-content-center rounded-3 fs-5 me-3 bg-success bg-opacity-10 text-success" style="width: 40px; height: 40px;">
-          🐾
+          
         </div>
         <div class="flex-grow-1">
           <h3 class="m-0 fs-6 fw-semibold text-dark">Animal silvestre</h3>

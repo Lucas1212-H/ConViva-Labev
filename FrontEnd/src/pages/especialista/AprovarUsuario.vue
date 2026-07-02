@@ -23,7 +23,7 @@
               @click="abaAtiva = 'pendentes'"
               type="button"
             >
-              ⏳ Solicitações Pendentes
+               Solicitações Pendentes
               <span v-if="usuariosPendentes.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {{ usuariosPendentes.length }}
               </span>
@@ -36,7 +36,7 @@
               @click="abaAtiva = 'ativos'"
               type="button"
             >
-              👥 Colaboradores Ativos
+              Colaboradores Ativos
             </button>
           </li>
         </ul>
@@ -77,7 +77,7 @@
                         :disabled="processandoId === user.id"
                       >
                         <span v-if="processandoId === user.id" class="spinner-border spinner-border-sm me-1"></span>
-                        ✅ Aprovar Cadastro
+                        Aprovar Cadastro
                       </button>
                     </td>
                   </tr>
@@ -101,7 +101,7 @@
                     <th class="ps-4">Nome</th>
                     <th>E-mail</th>
                     <th>Nível de Acesso</th>
-                    <th class="text-end pe-4">Ações</th>
+                    <th class="text-end pe-4"></th>
                   </tr>
                 </thead>
                 <tbody class="text-dark">
@@ -118,10 +118,10 @@
                     </td>
                     <td class="text-end pe-4">
                       <button class="btn btn-sm btn-outline-primary me-2" @click="abrirEdicao(user)">
-                        ✏️ Editar
+                        Editar
                       </button>
                       <button class="btn btn-sm btn-outline-danger" @click="deletarUsuario(user.id)">
-                        🗑️ Excluir
+                        Excluir
                       </button>
                     </td>
                   </tr>

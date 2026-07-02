@@ -84,7 +84,6 @@
                 <div class="text-muted small">
                   Publicado em: <time :datetime="post.created_at" class="fw-semibold text-dark">{{ formatarData(post.created_at) }}</time>
                 </div>
-                <span class="text-uppercase fw-bold text-success-light tracking-wider small link-fake">Ler Artigo →</span>
               </footer>
             </div>
           </div>
