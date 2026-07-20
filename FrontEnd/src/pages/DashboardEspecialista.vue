@@ -10,12 +10,31 @@
         <div class="col-lg-8">
           <div class="data-card p-4 h-100 shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-              <h4 class="fw-bold m-0 text-dark">Fila de Triagem</h4>
+              <h4 class="fw-bold m-0 text-dark">Denúncias</h4>
               <div class="input-group w-auto">
                 <span class="input-group-text bg-white border-0 shadow-sm"><i class="fas fa-search text-muted"></i></span>
                 <input type="text" class="form-control border-0 shadow-sm" placeholder="Buscar ocorrência...">
               </div>
             </div>
+
+            <!-- Sub-tabs for Pendentes, Em Análise and Arquivadas -->
+            <ul class="nav nav-tabs mb-3">
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: activeTab === 'pendentes' }" href="#" @click.prevent="activeTab = 'pendentes'">
+                  Pendentes
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: activeTab === 'em-analise' }" href="#" @click.prevent="activeTab = 'em-analise'">
+                  Em Análise
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: activeTab === 'arquivadas' }" href="#" @click.prevent="activeTab = 'arquivadas'">
+                  Arquivadas
+                </a>
+              </li>
+            </ul>
             
             <div class="table-responsive bg-white rounded-4 shadow-sm p-2">
               <table class="table table-hover align-middle mb-0">
@@ -29,31 +48,33 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="d in denuncias" :key="d.id">
-                    <td><span class="fw-bold">{{ d.animal }}</span></td>
-                    <td><small class="text-muted">{{ d.local }}</small></td>
-                    <td><small>{{ d.data }}</small></td>
+                  <tr v-for="d in denunciasFiltradas" :key="d.id">
+                    <td><span class="fw-bold">{{ d.tipo_animal || d.animal }}</span></td>
+                    <td><small class="text-muted">{{ d.ponto_referencia || d.local }}</small></td>
+                    <td><small>{{ formatarData(d.created_at) }}</small></td>
                     <td>
                       <span :class="['badge rounded-pill', getSituacaoClass(d.status)]">
                         {{ d.status }}
                       </span>
                     </td>
                     <td class="text-center">
-                      <button class="btn btn-sm btn-light text-success me-1 shadow-sm" @click="handleValidar(d)">
+                      <button v-if="activeTab === 'pendentes'" class="btn btn-sm btn-light text-success me-1 shadow-sm" @click="handleValidar(d)">
                         <i class="fas fa-eye"></i>
                       </button>
-                      <button class="btn btn-sm btn-light text-primary shadow-sm" @click="gerarLaudo(d)">
+                      <button v-if="activeTab === 'pendentes'" class="btn btn-sm btn-light text-primary shadow-sm" @click="gerarLaudo(d)">
                         <i class="fas fa-file-pdf"></i>
+                      </button>
+                      <button v-if="activeTab === 'em-analise'" class="btn btn-sm btn-light text-info shadow-sm" @click="handleEmAnalise(d)">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button v-if="activeTab === 'arquivadas'" class="btn btn-sm btn-light text-secondary shadow-sm" @click="handleVerDetalhes(d)">
+                        <i class="fas fa-info-circle"></i>
                       </button>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-
-            <button class="btn btn-primary-light w-100 mt-4 py-3 fw-bold" @click="handleVerArquivados">
-              Ver Histórico Completo
-            </button>
           </div>
         </div>
 
@@ -66,17 +87,33 @@
     <ModalValidacao 
       :denuncia="selectedDenuncia" 
       @fechar="selectedDenuncia = null" 
-      @aprovar="processarAprovacao"
+      @alocar="processarAlocacao"
+      @arquivar="processarArquivamento"
+    />
+
+    <ModalEmAnalise 
+      v-if="selectedDenuncia && activeTab === 'em-analise'"
+      :denuncia="selectedDenuncia"
+      @fechar="selectedDenuncia = null"
+      @arquivar="processarArquivamentoComDados"
+    />
+
+    <ModalArquivada 
+      v-if="selectedDenuncia && activeTab === 'arquivadas'"
+      :denuncia="selectedDenuncia"
+      @fechar="selectedDenuncia = null"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import NavBar from '@/components/NavBar.vue';
 import CardsMetricas from '@/components/especialista/CardsMetricas.vue';
 import PainelAnalise from '@/components/especialista/PainelAnalise.vue';
 import ModalValidacao from '@/components/especialista/ModalValidacao.vue';
+import ModalEmAnalise from '@/components/especialista/ModalEmAnalise.vue';
+import ModalArquivada from '@/components/especialista/ModalArquivada.vue';
 import { exportarLaudoOcorrencia } from '@/utils/exportLaudo';
 import { resolveStorageUrl } from '@/utils/mediaUrl';
 import axios from 'axios';
@@ -91,42 +128,118 @@ const API_BASE_URL = isLocal
 
 const selectedDenuncia = ref(null);
 const carregando = ref(true);
-const denuncias = ref([]) // array vazio para receber o banco
+const denunciasPendentes = ref([]);
+const denunciasEmAnalise = ref([]);
+const denunciasArquivadas = ref([]);
+const activeTab = ref('pendentes');
+
+// Computed property to filter denuncias based on active tab
+const denunciasFiltradas = computed(() => {
+  if (activeTab.value === 'pendentes') return denunciasPendentes.value;
+  if (activeTab.value === 'em-analise') return denunciasEmAnalise.value;
+  return denunciasArquivadas.value;
+});
 
 // Função assincrona para buscar as denuncias no banco
 const buscarOcorrenciasPendentes = async () => {
   try {
     carregando.value = true;
     const response = await axios.get(`${API_BASE_URL}/api/ocorrencias/pendentes`);
-    denuncias.value = response.data; // preenche o array com os dados
+    denunciasPendentes.value = response.data;
   } catch (error) {
     console.error('Error ao conectar com a API:', error);
   } finally {
     carregando.value = false;
   }
 }
- // Substitui o antigo getStatusClass focado na situação fisica do animal
+
+const buscarOcorrenciasEmAnalise = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/ocorrencias/em-analise`);
+    denunciasEmAnalise.value = response.data;
+  } catch (error) {
+    console.error('Error ao conectar com a API:', error);
+  }
+}
+
+const buscarOcorrenciasArquivadas = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/ocorrencias/arquivadas`);
+    denunciasArquivadas.value = response.data;
+  } catch (error) {
+    console.error('Error ao conectar com a API:', error);
+  }
+}
+
 const getSituacaoClass = (situacao) => {
   if (situacao === 'Morto') return 'bg-danger text-white';
   if (situacao === 'Ferido') return 'bg-warning text-dark';
   return 'bg-secondary text-white';
 };
 
+const formatarData = (data) => {
+  if (!data) return 'Data não informada';
+  return new Date(data).toLocaleDateString('pt-BR');
+};
+
 const handleValidar = (denuncia) => {
   selectedDenuncia.value = denuncia;
 };
 
-const processarAprovacao = async (denuncia, aprovado) => {
-  try {
-    await axios.put(`${API_BASE_URL}/api/ocorrencias/${denuncia.id}/validar`, { aprovado });
+const handleEmAnalise = (denuncia) => {
+  selectedDenuncia.value = denuncia;
+};
 
-    alert('Ocorrência avaliada com sucesso!');
+const handleVerDetalhes = (denuncia) => {
+  selectedDenuncia.value = denuncia;
+};
+
+const processarAlocacao = async (data) => {
+  try {
+    await axios.put(`${API_BASE_URL}/api/ocorrencias/${data.denunciaId}/alocar`, { usuario: data.usuario });
+
+    alert('Ocorrência alocada com sucesso!');
+    selectedDenuncia.value = null;
+    activeTab.value = 'em-analise';
+
+    buscarOcorrenciasPendentes();
+    buscarOcorrenciasEmAnalise();
+  } catch (error) {
+    console.error('Erro ao processar alocação:', error);
+    alert('Erro ao processar alocação da ocorrência.');
+  }
+};
+
+const processarArquivamento = async (data) => {
+  try {
+    await axios.put(`${API_BASE_URL}/api/ocorrencias/${data.denunciaId}/arquivar`, {
+      registrado_por: getCurrentUserName() || 'Usuário'
+    });
+
+    alert('Ocorrência arquivada com sucesso!');
     selectedDenuncia.value = null;
 
     buscarOcorrenciasPendentes();
+    buscarOcorrenciasArquivadas();
   } catch (error) {
-    console.error('Erro ao processar avaliação:', error);
-    alert('Erro ao processar avaliação da ocorrência.');
+    console.error('Erro ao processar arquivamento:', error);
+    alert('Erro ao processar arquivamento da ocorrência.');
+  }
+};
+
+const processarArquivamentoComDados = async (data) => {
+  try {
+    await axios.put(`${API_BASE_URL}/api/ocorrencias/${data.denunciaId}/arquivar`, data);
+
+    alert('Ocorrência arquivada com sucesso!');
+    selectedDenuncia.value = null;
+    activeTab.value = 'arquivadas';
+
+    buscarOcorrenciasEmAnalise();
+    buscarOcorrenciasArquivadas();
+  } catch (error) {
+    console.error('Erro ao processar arquivamento:', error);
+    alert('Erro ao processar arquivamento da ocorrência.');
   }
 };
 
@@ -152,18 +265,26 @@ const gerarLaudo = (denuncia) => {
   }
 };
 
-const handleVerArquivados = () => {
-  alert('Navegar para histórico completo de ocorrências.');
-};
-
 const handleGerenciarEspecies = () => {
   alert('Navegar para gerenciamento de espécies.');
 };
 
+const getCurrentUserName = () => {
+  try {
+    const stored = localStorage.getItem('usuarioLogado');
+    if (!stored) return null;
+    const u = JSON.parse(stored);
+    return u.nome || u.email || null;
+  } catch (e) {
+    return null;
+  }
+};
+
 onMounted(() => {
   buscarOcorrenciasPendentes();
+  buscarOcorrenciasEmAnalise();
+  buscarOcorrenciasArquivadas();
 });
-
 </script>
 
 <style scoped>

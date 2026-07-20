@@ -25,7 +25,9 @@ export interface DadosDenuncia {
   latitude: number
   longitude: number
   ponto_referencia: string
-  foto: File
+  descricao_local_exato?: string
+  media?: File
+  media_type?: string
 }
 
 export const ocorrenciaService = {
@@ -48,9 +50,13 @@ export const ocorrenciaService = {
     formData.append('latitude', dados.latitude.toString())
     formData.append('longitude', dados.longitude.toString())
     formData.append('ponto_referencia', dados.ponto_referencia)
+    formData.append('descricao_local_exato', dados.descricao_local_exato || '')
     
-    // Adiciona a foto
-    formData.append('foto', dados.foto)
+    // Adiciona a mídia (foto ou vídeo) se fornecida
+    if (dados.media) {
+      formData.append('media', dados.media)
+      formData.append('media_type', dados.media_type || 'image')
+    }
 
     try {
       // Como o baseURL já termina em /api, isso vai para /api/ocorrencias

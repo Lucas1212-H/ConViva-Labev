@@ -19,7 +19,7 @@
           class="nav-item-link nav-button"
           :class="{ active: abaAtiva === 'arquivadas' }"
           @click="selecionarAba('arquivadas')"
-        >Arquivadas</button>
+        >Denúncias</button>
         <button
           type="button"
           class="nav-item-link nav-button"

@@ -35,10 +35,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/ocorrencias', [OcorrenciaController::class, 'store']);
 Route::get('/ocorrencias/pendentes', [OcorrenciaController::class, 'indexPendentes']);
+Route::get('/ocorrencias/em-analise', [OcorrenciaController::class, 'indexEmAnalise']);
 Route::get('/ocorrencias/arquivadas', [OcorrenciaController::class, 'indexArquivadas']);
 Route::get('/ocorrencias/publicados', [OcorrenciaController::class, 'indexPublicados']);
 Route::get('/ocorrencias/recentes', [OcorrenciaController::class, 'indexRecentes']);
 Route::get('/ocorrencias/{id}', [OcorrenciaController::class, 'showPublicada']);
+Route::put('/ocorrencias/{id}/alocar', [OcorrenciaController::class, 'alocar']);
+Route::put('/ocorrencias/{id}/arquivar', [OcorrenciaController::class, 'arquivar']);
 Route::put('/ocorrencias/{id}/avaliar', [OcorrenciaController::class, 'avaliar']);
 Route::put('/ocorrencias/{id}/publicar', [OcorrenciaController::class, 'publicar']);
 Route::put('/ocorrencias/{id}/despublicar', [OcorrenciaController::class, 'despublicar']);

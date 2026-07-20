@@ -116,7 +116,9 @@ const formData = reactive({
   descricao: '',
   localizacao: null,
   referencia: '',
-  foto: null
+  descricaoLocalExato: '',
+  media: null,
+  mediaType: null
 })
 
 // 🟢 NOVA FUNÇÃO: Decrementar o passo atual de forma segura
@@ -141,16 +143,13 @@ const avancarPasso3 = (det) => {
 const avancarPasso4 = (loc) => { 
   formData.localizacao = loc.localizacao; 
   formData.referencia = loc.referencia; 
+  formData.descricaoLocalExato = loc.descricao_local_exato || '';
   passoAtual.value = 5; 
 }
 
-const finalizarFormulario = async (dadosFoto) => {
-  formData.foto = dadosFoto.foto
-  
-  if (!formData.foto) {
-    mensagemErro.value = 'Foto é obrigatória'
-    return
-  }
+const finalizarFormulario = async (dadosMedia) => {
+  formData.media = dadosMedia.media
+  formData.mediaType = dadosMedia.mediaType
 
   if (!formData.localizacao) {
     mensagemErro.value = 'Localização é obrigatória'
@@ -172,7 +171,9 @@ const finalizarFormulario = async (dadosFoto) => {
       latitude: formData.localizacao.lat,
       longitude: formData.localizacao.lng,
       ponto_referencia: formData.referencia || 'Não informado',
-      foto: formData.foto
+      descricao_local_exato: formData.descricaoLocalExato || '',
+      media: formData.media,
+      media_type: formData.mediaType
     }
 
     const resposta = await ocorrenciaService.criarDenuncia(dadosParaEnviar)
@@ -190,7 +191,9 @@ const finalizarFormulario = async (dadosFoto) => {
     formData.descricao = ''
     formData.localizacao = null
     formData.referencia = ''
-    formData.foto = null
+    formData.descricaoLocalExato = ''
+    formData.media = null
+    formData.mediaType = null
 
   } catch (error) {
     console.error('Erro ao enviar denuncia:', error)

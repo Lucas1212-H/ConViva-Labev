@@ -58,12 +58,28 @@ class CloudinaryService
 
     public function upload(UploadedFile $file, string $subfolder): string
     {
+        // If Cloudinary is not configured, use local storage as fallback
+        if (! $this->isConfigured()) {
+            return $this->uploadToLocal($file, $subfolder);
+        }
+
         $folder = trim(config('cloudinary.folder').'/'.$subfolder, '/');
+        
+        // Determine resource type based on file mime type
+        $resourceType = 'image';
+        if (str_starts_with($file->getMimeType(), 'video/')) {
+            $resourceType = 'video';
+        }
 
         try {
+            $uploadOptions = [
+                'folder' => $folder,
+                'resource_type' => $resourceType,
+            ];
+            
             $result = $this->getClient()->uploadApi()->upload(
                 $file->getRealPath(),
-                ['folder' => $folder]
+                $uploadOptions
             );
         } catch (ApiError $e) {
             $message = $e->getMessage();
@@ -79,6 +95,15 @@ class CloudinaryService
         }
 
         return $result['secure_url'];
+    }
+
+    private function uploadToLocal(UploadedFile $file, string $subfolder): string
+    {
+        $folder = trim($subfolder, '/');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs($folder, $fileName, 'public');
+        
+        return Storage::url($path);
     }
 
     public function deleteByUrl(?string $url): void
