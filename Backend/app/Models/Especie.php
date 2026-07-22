@@ -22,6 +22,8 @@ class Especie extends Model
         'id_classe',
         'id_ordem',
         'id_familia',
+        'ordem',
+        'familia',
     ];
 
     public function classe(): BelongsTo

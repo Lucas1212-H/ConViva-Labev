@@ -152,40 +152,21 @@ export default {
       try {
         this.salvando = true;
 
-        let ordemId = null;
-        let familiaId = null;
-
-        // Criar ordem se fornecida
-        if (this.especie.ordem_popular && this.especie.ordem_cientifico) {
-          const responseOrdem = await axios.post(`${API_BASE_URL}/api/ordens`, {
-            nome_popular: this.especie.ordem_popular,
-            nome_cientifico: this.especie.ordem_cientifico,
-            id_classe: this.especie.id_classe
-          });
-          ordemId = responseOrdem.data.id_ordem || responseOrdem.data.id;
-          console.log('Ordem criada:', responseOrdem.data, 'ID:', ordemId);
-        }
-
-        // Criar família se fornecida (só se ordem foi criada, pois backend exige id_ordem)
-        if (this.especie.familia_popular && this.especie.familia_cientifico && ordemId) {
-          const responseFamilia = await axios.post(`${API_BASE_URL}/api/familias`, {
-            nome_popular: this.especie.familia_popular,
-            nome_cientifico: this.especie.familia_cientifico,
-            id_ordem: ordemId
-          });
-          familiaId = responseFamilia.data.id_familia || responseFamilia.data.id;
-          console.log('Família criada:', responseFamilia.data, 'ID:', familiaId);
-        } else if (this.especie.familia_popular && this.especie.familia_cientifico && !ordemId) {
-          console.warn('Não foi possível criar família: ordem não foi criada ou ID não disponível');
-        }
-
         const formData = new FormData();
         formData.append('nome_popular', this.especie.nome_popular);
         formData.append('nome_cientifico', this.especie.nome_cientifico);
         formData.append('descricao', this.especie.descricao || '');
         formData.append('id_classe', this.especie.id_classe);
-        if (ordemId) formData.append('id_ordem', ordemId);
-        if (familiaId) formData.append('id_familia', familiaId);
+        
+        // Enviar ordem como texto (nome científico)
+        if (this.especie.ordem_cientifico) {
+          formData.append('ordem', this.especie.ordem_cientifico);
+        }
+        
+        // Enviar família como texto (nome científico)
+        if (this.especie.familia_cientifico) {
+          formData.append('familia', this.especie.familia_cientifico);
+        }
 
         const responseEspecie = await axios.post(`${API_BASE_URL}/api/especies`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }

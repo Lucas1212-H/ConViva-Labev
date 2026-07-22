@@ -37,6 +37,8 @@ class EspecieController extends Controller
             'id_classe' => ['required', 'integer', 'exists:classes,id_classe'],
             'id_ordem' => ['nullable', 'integer', 'exists:ordens,id_ordem'],
             'id_familia' => ['nullable', 'integer', 'exists:familias,id_familia'],
+            'ordem' => ['nullable', 'string', 'max:255'],
+            'familia' => ['nullable', 'string', 'max:255'],
         ]);
 
         if ($request->hasFile('foto')) {
@@ -91,6 +93,8 @@ class EspecieController extends Controller
             'id_classe' => ['required', 'integer', 'exists:classes,id_classe'],
             'id_ordem' => ['nullable', 'integer', 'exists:ordens,id_ordem'],
             'id_familia' => ['nullable', 'integer', 'exists:familias,id_familia'],
+            'ordem' => ['nullable', 'string', 'max:255'],
+            'familia' => ['nullable', 'string', 'max:255'],
         ]);
 
         if ($request->hasFile('foto')) {
