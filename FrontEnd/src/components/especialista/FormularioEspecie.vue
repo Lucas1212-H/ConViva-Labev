@@ -162,17 +162,21 @@ export default {
             nome_cientifico: this.especie.ordem_cientifico,
             id_classe: this.especie.id_classe
           });
-          ordemId = responseOrdem.data.id_ordem;
+          ordemId = responseOrdem.data.id_ordem || responseOrdem.data.id;
+          console.log('Ordem criada:', responseOrdem.data, 'ID:', ordemId);
         }
 
-        // Criar família se fornecida
-        if (this.especie.familia_popular && this.especie.familia_cientifico) {
+        // Criar família se fornecida (só se ordem foi criada, pois backend exige id_ordem)
+        if (this.especie.familia_popular && this.especie.familia_cientifico && ordemId) {
           const responseFamilia = await axios.post(`${API_BASE_URL}/api/familias`, {
             nome_popular: this.especie.familia_popular,
             nome_cientifico: this.especie.familia_cientifico,
             id_ordem: ordemId
           });
-          familiaId = responseFamilia.data.id_familia;
+          familiaId = responseFamilia.data.id_familia || responseFamilia.data.id;
+          console.log('Família criada:', responseFamilia.data, 'ID:', familiaId);
+        } else if (this.especie.familia_popular && this.especie.familia_cientifico && !ordemId) {
+          console.warn('Não foi possível criar família: ordem não foi criada ou ID não disponível');
         }
 
         const formData = new FormData();
