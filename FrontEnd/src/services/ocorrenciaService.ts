@@ -63,12 +63,15 @@ export const ocorrenciaService = {
       const response = await api.post('/ocorrencias', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+        timeout: 120000 // 2 minutos de timeout para upload de vídeos
       })
       return response.data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Erro ao criar denuncia')
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Erro ao criar denuncia'
+        console.error('Erro no upload:', error.response?.data)
+        throw new Error(errorMessage)
       }
       throw error
     }

@@ -26,7 +26,7 @@ class OcorrenciaController extends Controller
             'longitude' => 'required|numeric',
             'ponto_referencia' => 'required|string',
             'descricao_local_exato' => 'nullable|string|max:120',
-            'media' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:10240',
+            'media' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi,webm|max:51200',
             'media_type' => 'nullable|in:image,video',
         ]);
 

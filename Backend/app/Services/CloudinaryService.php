@@ -75,6 +75,8 @@ class CloudinaryService
             $uploadOptions = [
                 'folder' => $folder,
                 'resource_type' => $resourceType,
+                'chunk_size' => 6000000, // 6MB chunks para vídeos grandes
+                'timeout' => 120, // 120 segundos timeout
             ];
             
             $result = $this->getClient()->uploadApi()->upload(
