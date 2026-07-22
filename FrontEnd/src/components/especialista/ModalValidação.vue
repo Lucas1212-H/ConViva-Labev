@@ -3,7 +3,7 @@
     <div class="custom-modal bg-white rounded-4 shadow-lg">
       <div class="modal-header-custom">
         <h4 class="modal-title-custom">
-          {{ denuncia.titulo || ('Validar Ocorrência: ' + (denuncia.animal || 'Sem título')) }}
+          Detalhes da Denúncia
         </h4>
       </div>
 
@@ -40,13 +40,13 @@
                 <span class="label">Localização</span>
                 <span class="value">{{ denuncia.local || 'Não informada' }}</span>
               </div>
-              <div class="info-item info-item--full">
-                <span class="label">Descrição</span>
-                <span class="value muted">{{ denuncia.descricao || denuncia.description || 'Sem descrição' }}</span>
-              </div>
               <div class="info-item">
                 <span class="label">Status</span>
                 <span class="status-badge" :class="getStatusClass(denuncia.status)">{{ denuncia.status }}</span>
+              </div>
+              <div class="info-item info-item--full">
+                <span class="label">Descrição</span>
+                <span class="value muted">{{ denuncia.descricao || denuncia.description || 'Sem descrição' }}</span>
               </div>
             </div>
 

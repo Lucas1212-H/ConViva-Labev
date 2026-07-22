@@ -97,7 +97,6 @@ function montarHtmlLaudo(dados: DadosLaudo): string {
     <div class="campo"><label>ID da Ocorrência</label><p>#${escaparHtml(o.id)}</p></div>
     <div class="campo"><label>Data do Registro</label><p>${escaparHtml(formatarData(o.dataRegistro))}</p></div>
     <div class="campo"><label>Tipo de Animal</label><p>${escaparHtml(o.tipoAnimal)}</p></div>
-    <div class="campo"><label>Distinção Biológica</label><p>${escaparHtml(o.distincao)}</p></div>
     <div class="campo"><label>Situação do Animal</label><p>${escaparHtml(o.situacao)}</p></div>
     <div class="campo"><label>Status do Atendimento</label><p>${escaparHtml(o.statusWorkflow)}</p></div>
     <div class="campo"><label>Denunciante</label><p>${escaparHtml(o.denunciante)}</p></div>
@@ -151,7 +150,6 @@ export function exportarLaudoCsv(dados: DadosLaudo): void {
     ['ID', o.id],
     ['Data do Registro', formatarData(o.dataRegistro)],
     ['Tipo de Animal', o.tipoAnimal],
-    ['Distinção Biológica', o.distincao],
     ['Situação do Animal', o.situacao],
     ['Status do Atendimento', o.statusWorkflow],
     ['Denunciante', o.denunciante],
