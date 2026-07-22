@@ -19,12 +19,24 @@ class Especie extends Model
         'nome_cientifico',
         'nome_popular',
         'foto',
-        'id_categoria',
+        'id_classe',
+        'id_ordem',
+        'id_familia',
     ];
 
-    public function categoria(): BelongsTo
+    public function classe(): BelongsTo
     {
-        return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
+        return $this->belongsTo(Classe::class, 'id_classe', 'id_classe');
+    }
+
+    public function ordem(): BelongsTo
+    {
+        return $this->belongsTo(Ordem::class, 'id_ordem', 'id_ordem');
+    }
+
+    public function familia(): BelongsTo
+    {
+        return $this->belongsTo(Familia::class, 'id_familia', 'id_familia');
     }
 
     public function ocorrencias(): HasMany

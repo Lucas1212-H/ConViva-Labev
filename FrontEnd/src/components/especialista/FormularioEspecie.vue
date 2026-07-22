@@ -13,6 +13,30 @@
                     <input type="text" name="NomeCientifico" id="nome_cientifico" placeholder="Ex: Sturnus vulgaris" v-model="especie.nome_cientifico" required>
                     <label for="descricao">Descrição da Espécie</label>
                     <textarea name="Descricao" id="descricao" placeholder="Ex: Espécie de pássaro encontrada em áreas urbanas" v-model="especie.descricao"></textarea>
+                    
+                    <label for="classe">Classe</label>
+                    <select name="Classe" id="classe" v-model="especie.id_classe" @change="carregarOrdens" required>
+                        <option value="" disabled selected>Selecione uma classe</option>
+                        <option v-for="classe in classes" :key="classe.id_classe" :value="classe.id_classe">
+                            {{ classe.nome_popular }} ({{ classe.nome_cientifico }})
+                        </option>
+                    </select>
+                    
+                    <label for="ordem">Ordem</label>
+                    <select name="Ordem" id="ordem" v-model="especie.id_ordem" @change="carregarFamilias" :disabled="!especie.id_classe">
+                        <option value="" disabled selected>Selecione uma ordem</option>
+                        <option v-for="ordem in ordens" :key="ordem.id_ordem" :value="ordem.id_ordem">
+                            {{ ordem.nome_popular }} ({{ ordem.nome_cientifico }})
+                        </option>
+                    </select>
+                    
+                    <label for="familia">Família</label>
+                    <select name="Familia" id="familia" v-model="especie.id_familia" :disabled="!especie.id_ordem">
+                        <option value="" disabled selected>Selecione uma família</option>
+                        <option v-for="familia in familias" :key="familia.id_familia" :value="familia.id_familia">
+                            {{ familia.nome_popular }} ({{ familia.nome_cientifico }})
+                        </option>
+                    </select>
                 </fieldset>
 
                 <fieldset>
@@ -85,7 +109,9 @@ export default {
         nome_popular: '',
         nome_cientifico: '',
         descricao: '',
-        id_categoria: 1
+        id_classe: '',
+        id_ordem: '',
+        id_familia: ''
       },
       
       // Estados de carregamento
@@ -94,12 +120,61 @@ export default {
 
       // Dados vindo da API
       ocorrenciasPublicadas: [],
+      classes: [],
+      ordens: [],
+      familias: [],
 
       // Caixinha (Array) que guarda automaticamente os IDs dos checkboxes marcados
       ocorrenciasSelecionadas: []
     }
   },
   methods: {
+    async buscarClasses() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/classes`);
+        this.classes = response.data || [];
+      } catch (error) {
+        console.error('Erro ao buscar classes:', error);
+        this.classes = [];
+      }
+    },
+
+    async carregarOrdens() {
+      this.especie.id_ordem = '';
+      this.especie.id_familia = '';
+      this.familias = [];
+      
+      if (!this.especie.id_classe) {
+        this.ordens = [];
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/ordens?id_classe=${this.especie.id_classe}`);
+        this.ordens = response.data || [];
+      } catch (error) {
+        console.error('Erro ao buscar ordens:', error);
+        this.ordens = [];
+      }
+    },
+
+    async carregarFamilias() {
+      this.especie.id_familia = '';
+      
+      if (!this.especie.id_ordem) {
+        this.familias = [];
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/familias?id_ordem=${this.especie.id_ordem}`);
+        this.familias = response.data || [];
+      } catch (error) {
+        console.error('Erro ao buscar famílias:', error);
+        this.familias = [];
+      }
+    },
+
     async buscarOcorrenciasPublicadas() {
       try {
         this.carregandoOcorrencias = true;
@@ -121,7 +196,9 @@ export default {
         formData.append('nome_popular', this.especie.nome_popular);
         formData.append('nome_cientifico', this.especie.nome_cientifico);
         formData.append('descricao', this.especie.descricao || '');
-        formData.append('id_categoria', this.especie.id_categoria);
+        formData.append('id_classe', this.especie.id_classe);
+        if (this.especie.id_ordem) formData.append('id_ordem', this.especie.id_ordem);
+        if (this.especie.id_familia) formData.append('id_familia', this.especie.id_familia);
 
         const responseEspecie = await axios.post(`${API_BASE_URL}/api/especies`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
@@ -141,7 +218,9 @@ export default {
           nome_popular: '',
           nome_cientifico: '',
           descricao: '',
-          id_categoria: 1
+          id_classe: '',
+          id_ordem: '',
+          id_familia: ''
         };
         this.ocorrenciasSelecionadas = [];
         this.$router.push('/catalogo');
@@ -161,6 +240,7 @@ export default {
     }
   },
   mounted() {
+    this.buscarClasses();
     this.buscarOcorrenciasPublicadas();
   }
 }

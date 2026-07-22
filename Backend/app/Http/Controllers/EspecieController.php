@@ -14,11 +14,14 @@ class EspecieController extends Controller
 
     public function index(Request $request)
     {
-        $query = Especie::with(['categoria:id_categoria,nome_popular,nome_cientifico,foto'])
-            ->orderBy('nome_popular');
+        $query = Especie::with([
+            'classe:id_classe,nome_popular,nome_cientifico,foto',
+            'ordem:id_ordem,nome_popular,nome_cientifico',
+            'familia:id_familia,nome_popular,nome_cientifico'
+        ])->orderBy('nome_popular');
 
-        if ($request->filled('id_categoria')) {
-            $query->where('id_categoria', $request->integer('id_categoria'));
+        if ($request->filled('id_classe')) {
+            $query->where('id_classe', $request->integer('id_classe'));
         }
 
         return response()->json($query->get());
@@ -31,7 +34,9 @@ class EspecieController extends Controller
             'nome_cientifico' => ['required', 'string', 'max:255', 'unique:especies,nome_cientifico'],
             'nome_popular' => ['required', 'string', 'max:255'],
             'foto' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:5120'],
-            'id_categoria' => ['required', 'integer', 'exists:categorias,id_categoria'],
+            'id_classe' => ['required', 'integer', 'exists:classes,id_classe'],
+            'id_ordem' => ['nullable', 'integer', 'exists:ordens,id_ordem'],
+            'id_familia' => ['nullable', 'integer', 'exists:familias,id_familia'],
         ]);
 
         if ($request->hasFile('foto')) {
@@ -40,13 +45,15 @@ class EspecieController extends Controller
 
         $especie = Especie::create($dados);
 
-        return response()->json($especie->load('categoria'), 201);
+        return response()->json($especie->load(['classe', 'ordem', 'familia']), 201);
     }
 
     public function show(int $id)
     {
         $especie = Especie::with([
-            'categoria:id_categoria,nome_popular,nome_cientifico,foto',
+            'classe:id_classe,nome_popular,nome_cientifico,foto',
+            'ordem:id_ordem,nome_popular,nome_cientifico',
+            'familia:id_familia,nome_popular,nome_cientifico',
             'ocorrencias' => function ($query) {
                 $query->select('id', 'especie_id', 'latitude', 'longitude', 'situacao_animal', 'ponto_referencia', 'created_at');
             },
@@ -79,7 +86,9 @@ class EspecieController extends Controller
             ],
             'nome_popular' => ['required', 'string', 'max:255'],
             'foto' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:5120'],
-            'id_categoria' => ['required', 'integer', 'exists:categorias,id_categoria'],
+            'id_classe' => ['required', 'integer', 'exists:classes,id_classe'],
+            'id_ordem' => ['nullable', 'integer', 'exists:ordens,id_ordem'],
+            'id_familia' => ['nullable', 'integer', 'exists:familias,id_familia'],
         ]);
 
         if ($request->hasFile('foto')) {
@@ -89,7 +98,7 @@ class EspecieController extends Controller
 
         $especie->update($dados);
 
-        return response()->json($especie->fresh()->load('categoria'));
+        return response()->json($especie->fresh()->load(['classe', 'ordem', 'familia']));
     }
 
     public function destroy(int $id)

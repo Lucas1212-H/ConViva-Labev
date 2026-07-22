@@ -4,52 +4,54 @@
 
     <main class="container py-5">
       
-      <section v-if="!categoriaSelecionada">
+      <!-- Visão da Lista de Classes -->
+      <section v-if="!classeSelecionada">
         <header class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
-          <h1 class="h3 fw-bold text-dark m-0">Catálogo de Categorias</h1>
-          <button v-if="eAdmin" class="btn btn-success fw-medium px-4 w-100 w-sm-auto" @click="modalNovaCategoria = true">
-            + Nova Categoria
+          <h1 class="h3 fw-bold text-dark m-0">Catálogo de Classes</h1>
+          <button v-if="eAdmin" class="btn btn-success fw-medium px-4 w-100 w-sm-auto" @click="modalNovaClasse = true">
+            + Nova Classe
           </button>
         </header>
 
         <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center">
-          <div class="col" v-for="cat in listaCategorias" :key="cat.id_categoria">
+          <div class="col" v-for="cls in listaClasses" :key="cls.id_classe">
             <article 
               class="card p-4 text-center shadow-sm h-100 border-0 rounded-3 position-relative"
               style="cursor: pointer;"
-              @click="selecionarCategoria(cat)"
+              @click="selecionarClasse(cls)"
             >
               <button 
                 v-if="eAdmin" 
                 class="btn btn-sm btn-light border position-absolute top-0 end-0 m-2 rounded-circle btn-editar-cat"
-                title="Editar Categoria"
-                @click.stop="prepararEdicaoCategoria(cat)"
+                title="Editar Classe"
+                @click.stop="prepararEdicaoClasse(cls)"
               >
                 ✏️
               </button>
 
               <figure class="m-0">
                 <img 
-                  :src="obterImagemUrlTratada(cat)" 
-                  :alt="cat.nome_popular"
+                  :src="obterImagemUrlTratada(cls)" 
+                  :alt="cls.nome_popular"
                   class="img-fluid mb-2 object-fit-cover" 
                   style="max-height: 80px; min-height: 80px; width: auto;"
                 >
-                <figcaption class="h5 fw-bold text-dark m-0">{{ cat.nome_popular }}</figcaption>
-                <small class="text-muted fst-italic">{{ cat.nome_cientifico }}</small>
+                <figcaption class="h5 fw-bold text-dark m-0">{{ cls.nome_popular }}</figcaption>
+                <small class="text-muted fst-italic">{{ cls.nome_cientifico }}</small>
               </figure>
             </article>
           </div>
         </div>
       </section>
 
+      <!-- Visão das Espécies da Classe Selecionada -->
       <section v-else>
         <header class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3">
           <div class="w-100">
-            <button class="btn btn-sm btn-light border px-3 mb-2" @click="categoriaSelecionada = null">
+            <button class="btn btn-sm btn-light border px-3 mb-2" @click="classeSelecionada = null">
               ← Voltar
             </button>
-            <h1 class="h3 fw-bold text-success m-0">Espécies em {{ categoriaSelecionada.nome_popular }}</h1>
+            <h1 class="h3 fw-bold text-success m-0">Espécies em {{ classeSelecionada.nome_popular }}</h1>
           </div>
           
           <button v-if="eAdmin" class="btn btn-primary fw-medium px-4 w-100 w-sm-auto" @click="modalNovaEspecie = true">
@@ -58,7 +60,7 @@
         </header>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-          <div class="col" v-for="especie in (categoriaSelecionada?.especies || [])" :key="especie.id_especie">
+          <div class="col" v-for="especie in (classeSelecionada?.especies || [])" :key="especie.id_especie">
             <article class="card especie-card h-100 shadow-sm border-0 overflow-hidden rounded-3" style="cursor: pointer;" @click="IrParaDetalhes(especie.id_especie)">
               <div v-if="eAdmin" class="species-actions">
                 <button
@@ -104,71 +106,73 @@
           </div>
         </div>
 
-        <div v-if="(categoriaSelecionada?.especies || []).length === 0" class="alert alert-light text-center border mt-4">
-          Nenhuma espécie cadastrada em {{ categoriaSelecionada?.nome_popular }} ainda.
+        <div v-if="(classeSelecionada?.especies || []).length === 0" class="alert alert-light text-center border mt-4">
+          Nenhuma espécie cadastrada em {{ classeSelecionada?.nome_popular }} ainda.
         </div>
       </section>
 
     </main>
 
-    <div class="modal" :class="{ show: modalNovaCategoria }" :style="{ display: modalNovaCategoria ? 'block' : 'none' }" tabindex="-1">
+    <!-- Modal Nova Classe -->
+    <div class="modal" :class="{ show: modalNovaClasse }" :style="{ display: modalNovaClasse ? 'block' : 'none' }" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Nova Categoria</h5>
-            <button type="button" class="btn-close" @click="modalNovaCategoria = false"></button>
+            <h5 class="modal-title">Nova Classe</h5>
+            <button type="button" class="btn-close" @click="modalNovaClasse = false"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Nome Científico</label>
-              <input type="text" class="form-control" v-model="formCategoria.nome_cientifico" placeholder="Ex: Felidae">
+              <input type="text" class="form-control" v-model="formClasse.nome_cientifico" placeholder="Ex: Mammalia">
             </div>
             <div class="mb-3">
               <label class="form-label">Nome Popular</label>
-              <input type="text" class="form-control" v-model="formCategoria.nome_popular" placeholder="Ex: Felinos">
+              <input type="text" class="form-control" v-model="formClasse.nome_popular" placeholder="Ex: Mamíferos">
             </div>
             <div class="mb-3">
               <label class="form-label">Foto</label>
-              <input type="file" class="form-control" @change="handleFotoCategoriaChange" accept="image/*">
+              <input type="file" class="form-control" @change="handleFotoClasseChange" accept="image/*">
               <small class="text-muted">Formatos aceitos: JPG, PNG, GIF, WebP</small>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="modalNovaCategoria = false">Cancelar</button>
-            <button type="button" class="btn btn-success" @click="criarCategoria">Salvar</button>
+            <button type="button" class="btn btn-secondary" @click="modalNovaClasse = false">Cancelar</button>
+            <button type="button" class="btn btn-success" @click="criarClasse">Salvar</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal" :class="{ show: modalEditarCategoria }" :style="{ display: modalEditarCategoria ? 'block' : 'none' }" tabindex="-1">
+    <!-- Modal Editar Classe -->
+    <div class="modal" :class="{ show: modalEditarClasse }" :style="{ display: modalEditarClasse ? 'block' : 'none' }" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title">Editar Categoria</h5>
-            <button type="button" class="btn-close btn-close-white" @click="modalEditarCategoria = false"></button>
+            <h5 class="modal-title">Editar Classe</h5>
+            <button type="button" class="btn-close btn-close-white" @click="modalEditarClasse = false"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Nome Científico</label>
-              <input type="text" class="form-control" v-model="formEditarCategoria.nome_cientifico">
+              <input type="text" class="form-control" v-model="formEditarClasse.nome_cientifico">
             </div>
             <div class="mb-3">
               <label class="form-label">Nome Popular</label>
-              <input type="text" class="form-control" v-model="formEditarCategoria.nome_popular">
+              <input type="text" class="form-control" v-model="formEditarClasse.nome_popular">
             </div>
             <div class="mb-3">
               <label class="form-label">Substituir Foto</label>
-              <input type="file" class="form-control" @change="handleFotoEditarCategoriaChange" accept="image/*">
+              <input type="file" class="form-control" @change="handleFotoEditarClasseChange" accept="image/*">
               <small class="text-muted">Deixe em branco se preferir manter a imagem atual.</small>
             </div>
           </div>
           <div class="modal-footer justify-content-between flex-wrap gap-2">
-            <button type="button" class="btn btn-outline-danger" @click="excluirCategoriaEditando">Excluir Categoria</button>
+            <button type="button" class="btn btn-outline-danger" @click="excluirClasseEditando">Excluir Classe</button>
             <div class="d-flex gap-2 ms-auto">
-              <button type="button" class="btn btn-secondary" @click="modalEditarCategoria = false">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="salvarEdicaoCategoria" :disabled="salvandoCategoria">
-                <span v-if="salvandoCategoria" class="spinner-border spinner-border-sm me-1"></span>
+              <button type="button" class="btn btn-secondary" @click="modalEditarClasse = false">Cancelar</button>
+              <button type="button" class="btn btn-primary" @click="salvarEdicaoClasse" :disabled="salvandoClasse">
+                <span v-if="salvandoClasse" class="spinner-border spinner-border-sm me-1"></span>
                 Atualizar
               </button>
             </div>
@@ -177,6 +181,7 @@
       </div>
     </div>
 
+    <!-- Modal Editar Espécie -->
     <div class="modal" :class="{ show: modalEditarEspecie }" :style="{ display: modalEditarEspecie ? 'block' : 'none' }" tabindex="-1">
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -195,10 +200,10 @@
                 <input type="text" class="form-control" v-model="formEditarEspecie.nome_popular">
               </div>
               <div class="col-md-6">
-                <label class="form-label">Categoria</label>
-                <select class="form-select" v-model="formEditarEspecie.id_categoria">
-                  <option v-for="cat in listaCategorias" :key="cat.id_categoria" :value="cat.id_categoria">
-                    {{ cat.nome_popular }}
+                <label class="form-label">Classe</label>
+                <select class="form-select" v-model="formEditarEspecie.id_classe">
+                  <option v-for="cls in listaClasses" :key="cls.id_classe" :value="cls.id_classe">
+                    {{ cls.nome_popular }}
                   </option>
                 </select>
               </div>
@@ -223,6 +228,7 @@
       </div>
     </div>
 
+    <!-- Modal Nova Espécie -->
     <div class="modal" :class="{ show: modalNovaEspecie }" :style="{ display: modalNovaEspecie ? 'block' : 'none' }" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -291,7 +297,8 @@
       </div>
     </div>
 
-    <div class="modal-backdrop fade" :class="{ show: modalNovaCategoria || modalNovaEspecie || modalEditarCategoria || modalEditarEspecie }" v-if="modalNovaCategoria || modalNovaEspecie || modalEditarCategoria || modalEditarEspecie"></div>
+    <!-- Backdrop dos Modais -->
+    <div class="modal-backdrop fade" :class="{ show: modalNovaClasse || modalNovaEspecie || modalEditarClasse || modalEditarEspecie }" v-if="modalNovaClasse || modalNovaEspecie || modalEditarClasse || modalEditarEspecie"></div>
   </div>
 </template>
 
@@ -312,31 +319,31 @@ export default {
   },
   data() {
     return {
-      categoriaSelecionada: null,
-      listaCategorias: [],
-      modalNovaCategoria: false,
+      classeSelecionada: null,
+      listaClasses: [],
+      modalNovaClasse: false,
       modalNovaEspecie: false,
-      modalEditarCategoria: false, // Controle do modal de edição
+      modalEditarClasse: false,
       modalEditarEspecie: false,
-      salvandoCategoria: false,
+      salvandoClasse: false,
       salvandoEspecie: false,
       carregandoOcorrencias: false,
       ocorrenciasPublicadas: [],
       ocorrenciasSelecionadas: [],
-      formCategoria: {
+      formClasse: {
         nome_cientifico: '',
         nome_popular: '',
         foto: null
       },
-      formEditarCategoria: { // Formulário isolado para a edição
-        id_categoria: null,
+      formEditarClasse: {
+        id_classe: null,
         nome_cientifico: '',
         nome_popular: '',
         foto: null
       },
       formEditarEspecie: {
         id_especie: null,
-        id_categoria: null,
+        id_classe: null,
         nome_cientifico: '',
         nome_popular: '',
         descricao: '',
@@ -351,7 +358,6 @@ export default {
     }
   },
   computed: {
-    // 🛡️ Propriedade Computada para verificar o nível de acesso em tempo de execução
     eAdmin() {
       const tipo = localStorage.getItem('user_tipo');
       return tipo === 'Administrador';
@@ -367,134 +373,132 @@ export default {
 
     async buscarDadosDoCatalogo() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/categorias`);
-        this.listaCategorias = response.data;
+        const response = await axios.get(`${API_BASE_URL}/api/classes`);
+        this.listaClasses = response.data;
       } catch (error) {
         console.error('Erro ao conectar com a API:', error);
       }
     },
     
-    async selecionarCategoria(categoria) {
+    async selecionarClasse(classe) {
       try {
-        const id = categoria.id_categoria || categoria.id;
-        const response = await axios.get(`${API_BASE_URL}/api/categorias/${id}`);
+        const id = classe.id_classe || classe.id;
+        const response = await axios.get(`${API_BASE_URL}/api/classes/${id}`);
         let dados = response.data;
         
         if (Array.isArray(dados)) { dados = dados[0] || {}; }
         if (!dados.especies) { dados.especies = []; }
         
-        this.categoriaSelecionada = dados;
+        this.classeSelecionada = dados;
       } catch (error) {
         console.error('Erro ao carregar espécies:', error);
-        this.categoriaSelecionada = { ...categoria, especies: [] };
+        this.classeSelecionada = { ...classe, especies: [] };
       }
     },
     
-    handleFotoCategoriaChange(event) {
-      this.formCategoria.foto = event.target.files[0] || null;
+    handleFotoClasseChange(event) {
+      this.formClasse.foto = event.target.files[0] || null;
     },
 
-    handleFotoEditarCategoriaChange(event) {
-      this.formEditarCategoria.foto = event.target.files[0] || null;
+    handleFotoEditarClasseChange(event) {
+      this.formEditarClasse.foto = event.target.files[0] || null;
     },
     
     handleFotoEspecieChange(event) {
       this.formEspecie.foto = event.target.files[0] || null;
     },
     
-    async criarCategoria() {
+    async criarClasse() {
       try {
-        if (!this.formCategoria.nome_cientifico || !this.formCategoria.nome_popular) {
+        if (!this.formClasse.nome_cientifico || !this.formClasse.nome_popular) {
           alert('Preencha todos os campos obrigatórios!');
           return;
         }
         
         const formData = new FormData();
-        formData.append('nome_cientifico', this.formCategoria.nome_cientifico);
-        formData.append('nome_popular', this.formCategoria.nome_popular);
-        if (this.formCategoria.foto) {
-          formData.append('foto', this.formCategoria.foto);
+        formData.append('nome_cientifico', this.formClasse.nome_cientifico);
+        formData.append('nome_popular', this.formClasse.nome_popular);
+        if (this.formClasse.foto) {
+          formData.append('foto', this.formClasse.foto);
         }
         
-        await axios.post(`${API_BASE_URL}/api/categorias`, formData, {
+        await axios.post(`${API_BASE_URL}/api/classes`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         
-        this.formCategoria = { nome_cientifico: '', nome_popular: '', foto: null };
-        this.modalNovaCategoria = false;
+        this.formClasse = { nome_cientifico: '', nome_popular: '', foto: null };
+        this.modalNovaClasse = false;
         
         await this.buscarDadosDoCatalogo();
-        alert('Categoria criada com sucesso!');
+        alert('Classe criada com sucesso!');
       } catch (error) {
-        console.error('Erro ao criar categoria:', error);
-        alert('Erro ao criar categoria.');
+        console.error('Erro ao criar classe:', error);
+        alert('Erro ao criar classe.');
       }
     },
 
-    // ✏️ Prepara os inputs do modal com as informações atuais da categoria escolhida
-    prepararEdicaoCategoria(categoria) {
-      this.formEditarCategoria.id_categoria = categoria.id_categoria || categoria.id;
-      this.formEditarCategoria.nome_cientifico = categoria.nome_cientifico;
-      this.formEditarCategoria.nome_popular = categoria.nome_popular;
-      this.formEditarCategoria.foto = null; // Reseta o input de arquivo
-      this.modalEditarCategoria = true;
+    prepararEdicaoClasse(classe) {
+      this.formEditarClasse.id_classe = classe.id_classe || classe.id;
+      this.formEditarClasse.nome_cientifico = classe.nome_cientifico;
+      this.formEditarClasse.nome_popular = classe.nome_popular;
+      this.formEditarClasse.foto = null;
+      this.modalEditarClasse = true;
     },
 
-    //  Envia a atualização da categoria para a API do Laravel
-    async salvarEdicaoCategoria() {
+    async salvarEdicaoClasse() {
       try {
-        this.salvandoCategoria = true;
-        const id = this.formEditarCategoria.id_categoria;
+        this.salvandoClasse = true;
+        const id = this.formEditarClasse.id_classe;
 
         const formData = new FormData();
-        formData.append('_method', 'PUT'); // Truque essencial para o Laravel ler arquivos em rotas de atualização
-        formData.append('nome_cientifico', this.formEditarCategoria.nome_cientifico);
-        formData.append('nome_popular', this.formEditarCategoria.nome_popular);
+        formData.append('_method', 'PUT');
+        formData.append('nome_cientifico', this.formEditarClasse.nome_cientifico);
+        formData.append('nome_popular', this.formEditarClasse.nome_popular);
         
-        if (this.formEditarCategoria.foto) {
-          formData.append('foto', this.formEditarCategoria.foto);
+        if (this.formEditarClasse.foto) {
+          formData.append('foto', this.formEditarClasse.foto);
         }
 
-        await axios.post(`${API_BASE_URL}/api/categorias/${id}`, formData, {
+        await axios.post(`${API_BASE_URL}/api/classes/${id}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
 
-        alert('Categoria atualizada com sucesso!');
-        this.modalEditarCategoria = false;
-        await this.buscarDadosDoCatalogo(); // Atualiza a grade visual da aplicação
+        alert('Classe atualizada com sucesso!');
+        this.modalEditarClasse = false;
+        await this.buscarDadosDoCatalogo();
 
       } catch (error) {
-        console.error('Erro ao editar categoria:', error);
-        alert('Erro ao atualizar a categoria.');
+        console.error('Erro ao editar classe:', error);
+        alert('Erro ao atualizar a classe.');
       } finally {
-        this.salvandoCategoria = false;
+        this.salvandoClasse = false;
       }
     },
 
-    async excluirCategoriaEditando() {
-      const id = this.formEditarCategoria.id_categoria;
+    async excluirClasseEditando() {
+      const id = this.formEditarClasse.id_classe;
       if (!id) return;
 
-      if (!confirm('Excluir esta categoria também removerá as espécies vinculadas. Deseja continuar?')) {
+      if (!confirm('Excluir esta classe também removerá as espécies vinculadas. Deseja continuar?')) {
         return;
       }
 
       try {
-        await axios.delete(`${API_BASE_URL}/api/categorias/${id}`);
-        this.modalEditarCategoria = false;
-        this.formEditarCategoria = { id_categoria: null, nome_cientifico: '', nome_popular: '', foto: null };
-        this.categoriaSelecionada = null;
+        await axios.delete(`${API_BASE_URL}/api/classes/${id}`);
+        this.modalEditarClasse = false;
+        this.formEditarClasse = { id_classe: null, nome_cientifico: '', nome_popular: '', foto: null };
+        this.classeSelecionada = null;
         await this.buscarDadosDoCatalogo();
-        alert('Categoria excluída com sucesso!');
+        alert('Classe excluída com sucesso!');
       } catch (error) {
-        console.error('Erro ao excluir categoria:', error);
-        alert('Erro ao excluir a categoria.');
+        console.error('Erro ao excluir classe:', error);
+        alert('Erro ao excluir a classe.');
       }
     },
 
     prepararEdicaoEspecie(especie) {
       this.formEditarEspecie.id_especie = especie.id_especie;
-      this.formEditarEspecie.id_categoria = especie.id_categoria || this.categoriaSelecionada?.id_categoria || this.categoriaSelecionada?.id;
+      this.formEditarEspecie.id_classe = especie.id_classe || this.classeSelecionada?.id_classe || this.classeSelecionada?.id;
       this.formEditarEspecie.nome_cientifico = especie.nome_cientifico;
       this.formEditarEspecie.nome_popular = especie.nome_popular;
       this.formEditarEspecie.descricao = especie.descricao || '';
@@ -513,7 +517,7 @@ export default {
 
         const formData = new FormData();
         formData.append('_method', 'PUT');
-        formData.append('id_categoria', String(this.formEditarEspecie.id_categoria));
+        formData.append('id_classe', String(this.formEditarEspecie.id_classe));
         formData.append('nome_cientifico', this.formEditarEspecie.nome_cientifico);
         formData.append('nome_popular', this.formEditarEspecie.nome_popular);
         formData.append('descricao', this.formEditarEspecie.descricao || '');
@@ -529,15 +533,15 @@ export default {
         this.modalEditarEspecie = false;
         this.formEditarEspecie = {
           id_especie: null,
-          id_categoria: null,
+          id_classe: null,
           nome_cientifico: '',
           nome_popular: '',
           descricao: '',
           foto: null
         };
 
-        if (this.categoriaSelecionada) {
-          await this.selecionarCategoria(this.categoriaSelecionada);
+        if (this.classeSelecionada) {
+          await this.selecionarClasse(this.classeSelecionada);
         }
 
         alert('Espécie atualizada com sucesso!');
@@ -557,8 +561,8 @@ export default {
       try {
         await axios.delete(`${API_BASE_URL}/api/especies/${especie.id_especie}`);
 
-        if (this.categoriaSelecionada) {
-          await this.selecionarCategoria(this.categoriaSelecionada);
+        if (this.classeSelecionada) {
+          await this.selecionarClasse(this.classeSelecionada);
         }
 
         alert('Espécie excluída com sucesso!');
@@ -570,8 +574,8 @@ export default {
     
     async criarEspecie() {
       try {
-        if (!this.categoriaSelecionada) { alert('Selecione uma categoria primeiro!'); return; }
-        const categoriaId = this.categoriaSelecionada.id_categoria || this.categoriaSelecionada.id;
+        if (!this.classeSelecionada) { alert('Selecione uma classe primeiro!'); return; }
+        const classeId = this.classeSelecionada.id_classe || this.classeSelecionada.id;
         
         if (!this.formEspecie.nome_cientifico || !this.formEspecie.nome_popular) {
           alert('Preencha todos os campos obrigatórios!');
@@ -579,7 +583,7 @@ export default {
         }
         
         const formData = new FormData();
-        formData.append('id_categoria', String(categoriaId));
+        formData.append('id_classe', String(classeId));
         formData.append('nome_cientifico', this.formEspecie.nome_cientifico);
         formData.append('nome_popular', this.formEspecie.nome_popular);
         formData.append('descricao', this.formEspecie.descricao);
@@ -601,9 +605,9 @@ export default {
         this.ocorrenciasSelecionadas = [];
         this.modalNovaEspecie = false;
         
-        const response = await axios.get(`${API_BASE_URL}/api/categorias/${categoriaId}`);
+        const response = await axios.get(`${API_BASE_URL}/api/classes/${classeId}`);
         const dados = response.data;
-        this.categoriaSelecionada = dados.especies ? dados : { ...dados, especies: [] };
+        this.classeSelecionada = dados.especies ? dados : { ...dados, especies: [] };
         
         alert('Espécie criada com sucesso!');
       } catch (error) {

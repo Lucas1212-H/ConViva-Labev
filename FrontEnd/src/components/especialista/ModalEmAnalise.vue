@@ -62,19 +62,29 @@
               </div>
               <div class="col-md-6 mb-2">
                 <label class="small fw-semibold text-muted mb-1">Classe</label>
-                <input v-model="formData.classe" type="text" class="form-control form-control-sm" placeholder="Ex.: Mammalia, Aves...">
-              </div>
-              <div class="col-md-6 mb-2">
-                <label class="small fw-semibold text-muted mb-1">Ordem</label>
-                <input v-model="formData.ordem" type="text" class="form-control form-control-sm" placeholder="Ex.: Primates, Carnivora...">
-              </div>
-              <div class="col-md-6 mb-2">
-                <label class="small fw-semibold text-muted mb-1">Família</label>
-                <input v-model="formData.familia" type="text" class="form-control form-control-sm" placeholder="Ex.: Cebidae, Felidae...">
+                <select v-model="formData.id_classe" @change="carregarEspeciesPorClasse" class="form-select form-select-sm">
+                  <option value="" disabled selected>Selecione uma classe</option>
+                  <option v-for="classe in classes" :key="classe.id_classe" :value="classe.id_classe">
+                    {{ classe.nome_popular }} ({{ classe.nome_cientifico }})
+                  </option>
+                </select>
               </div>
               <div class="col-md-6 mb-2">
                 <label class="small fw-semibold text-muted mb-1">Espécie</label>
-                <input v-model="formData.especie" type="text" class="form-control form-control-sm" placeholder="Ex.: Sapajus apella...">
+                <select v-model="formData.id_especie" @change="preencherClassificacaoAutomatica" class="form-select form-select-sm" :disabled="!formData.id_classe">
+                  <option value="" disabled selected>Selecione uma espécie</option>
+                  <option v-for="especie in especies" :key="especie.id_especie" :value="especie.id_especie">
+                    {{ especie.nome_popular }} ({{ especie.nome_cientifico }})
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="small fw-semibold text-muted mb-1">Ordem</label>
+                <input v-model="formData.ordem" type="text" class="form-control form-control-sm" placeholder="Preenchido automaticamente" readonly>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label class="small fw-semibold text-muted mb-1">Família</label>
+                <input v-model="formData.familia" type="text" class="form-control form-control-sm" placeholder="Preenchido automaticamente" readonly>
               </div>
               <div class="col-md-6 mb-2">
                 <label class="small fw-semibold text-muted mb-1">Quem Coletou</label>
@@ -123,6 +133,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
 
 const props = defineProps({
   denuncia: Object
@@ -136,6 +147,8 @@ const formData = ref({
   ordem: '',
   familia: '',
   especie: '',
+  id_classe: '',
+  id_especie: '',
   que_coletou: '',
   destino: '',
   classe_etaria: '',
@@ -143,6 +156,12 @@ const formData = ref({
   campo_encontrado: '',
   observacoes: ''
 })
+
+const classes = ref([])
+const especies = ref([])
+
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE_URL = isLocal ? 'http://localhost:8000' : 'https://conviva-labev.onrender.com'
 
 const getCurrentUserName = () => {
   try {
@@ -160,6 +179,48 @@ const formatarDataHora = (data) => {
   return new Date(data).toLocaleString('pt-BR')
 }
 
+const buscarClasses = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/classes`)
+    classes.value = response.data || []
+  } catch (error) {
+    console.error('Erro ao buscar classes:', error)
+    classes.value = []
+  }
+}
+
+const carregarEspeciesPorClasse = async () => {
+  formData.value.id_especie = ''
+  formData.value.classe = ''
+  formData.value.ordem = ''
+  formData.value.familia = ''
+  formData.value.especie = ''
+  especies.value = []
+  
+  if (!formData.value.id_classe) {
+    return
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/especies?id_classe=${formData.value.id_classe}`)
+    especies.value = response.data || []
+  } catch (error) {
+    console.error('Erro ao buscar espécies:', error)
+    especies.value = []
+  }
+}
+
+const preencherClassificacaoAutomatica = () => {
+  const especieSelecionada = especies.value.find(e => e.id_especie === formData.value.id_especie)
+  
+  if (especieSelecionada) {
+    formData.value.classe = especieSelecionada.classe?.nome_cientifico || ''
+    formData.value.ordem = especieSelecionada.ordem?.nome_cientifico || ''
+    formData.value.familia = especieSelecionada.familia?.nome_cientifico || ''
+    formData.value.especie = especieSelecionada.nome_cientifico || ''
+  }
+}
+
 const arquivarComDados = () => {
   emit('arquivar', {
     denunciaId: props.denuncia.id,
@@ -168,6 +229,8 @@ const arquivarComDados = () => {
     registrado_por: getCurrentUserName() || 'Usuário'
   })
 }
+
+buscarClasses()
 </script>
 
 <style scoped>
