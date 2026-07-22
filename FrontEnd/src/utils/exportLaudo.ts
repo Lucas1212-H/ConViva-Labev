@@ -20,8 +20,6 @@ export interface DadosLaudo {
   dataRegistro?: string
   created_at?: string
   data?: string
-  parecerTecnico?: string
-  parecer_tecnico?: string
   latitude?: number | string | null
   longitude?: number | string | null
   coordenadas?: { lat?: number | null; lng?: number | null }
@@ -50,7 +48,6 @@ function normalizar(dados: DadosLaudo) {
     local: dados.local ?? dados.ponto_referencia ?? '—',
     descricao: dados.descricao ?? 'Sem descrição registrada.',
     dataRegistro: dados.dataRegistro ?? dados.created_at ?? dados.data ?? new Date().toISOString(),
-    parecer: dados.parecerTecnico ?? dados.parecer_tecnico ?? 'Parecer pendente de avaliação técnica.',
     coordenadas: lat != null && lng != null ? `${lat}, ${lng}` : 'Não informado',
     imagem: resolveStorageUrl(dados.imagem ?? ''),
   }
@@ -109,11 +106,6 @@ function montarHtmlLaudo(dados: DadosLaudo): string {
     <p>${escaparHtml(o.descricao)}</p>
   </div>
 
-  <div class="bloco">
-    <h2>Parecer Técnico</h2>
-    <p>${escaparHtml(o.parecer)}</p>
-  </div>
-
   ${o.imagem ? `<div class="bloco"><h2>Evidência Fotográfica</h2><img class="imagem" src="${escaparHtml(o.imagem)}" alt="Foto da ocorrência" /></div>` : ''}
 
   <div class="rodape">
@@ -156,7 +148,6 @@ export function exportarLaudoCsv(dados: DadosLaudo): void {
     ['Local', o.local],
     ['Coordenadas', o.coordenadas],
     ['Descrição', o.descricao],
-    ['Parecer Técnico', o.parecer],
   ]
 
   const csv = linhas

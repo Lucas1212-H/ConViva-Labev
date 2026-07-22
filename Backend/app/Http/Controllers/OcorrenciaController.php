@@ -28,12 +28,23 @@ class OcorrenciaController extends Controller
             'descricao_local_exato' => 'nullable|string|max:120',
             'media' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi,webm|max:51200',
             'media_type' => 'nullable|in:image,video',
+            'media_url' => 'nullable|url|max:1000',
         ]);
 
         $fotoPath = null;
         $videoPath = null;
 
-        if ($request->hasFile('media')) {
+        // Prioridade 1: URL do Cloudinary enviada pelo front-end
+        if ($request->filled('media_url') && $request->filled('media_type')) {
+            $mediaType = $request->media_type;
+            if ($mediaType === 'video') {
+                $videoPath = $request->media_url;
+            } else {
+                $fotoPath = $request->media_url;
+            }
+        }
+        // Prioridade 2: Upload de arquivo (fallback)
+        elseif ($request->hasFile('media')) {
             $mediaFile = $request->file('media');
             $mediaType = $request->media_type ?? 'image';
 

@@ -28,6 +28,7 @@ export interface DadosDenuncia {
   descricao_local_exato?: string
   media?: File
   media_type?: string
+  media_url?: string
 }
 
 export const ocorrenciaService = {
@@ -55,6 +56,12 @@ export const ocorrenciaService = {
     // Adiciona a mídia (foto ou vídeo) se fornecida
     if (dados.media) {
       formData.append('media', dados.media)
+      formData.append('media_type', dados.media_type || 'image')
+    }
+    
+    // Adiciona a URL do Cloudinary se fornecida (prioridade sobre upload de arquivo)
+    if (dados.media_url) {
+      formData.append('media_url', dados.media_url)
       formData.append('media_type', dados.media_type || 'image')
     }
 
