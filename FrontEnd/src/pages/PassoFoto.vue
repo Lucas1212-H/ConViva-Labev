@@ -14,7 +14,7 @@
       style="height: 220px; border-style: dashed !important;"
     >
       <div v-if="!mediaPreview" class="text-center text-secondary">
-        <div class="display-6 mb-2">📸</div>
+        <div class="display-6 mb-2"></div>
         <p class="small m-0">Nenhuma foto ou vídeo selecionado</p>
       </div>
       
@@ -37,19 +37,11 @@
 
     <div class="d-grid gap-2 mb-4" v-if="!mediaPreview">
       <button class="btn btn-outline-success py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirCamera">
-        <span>📷</span> Tirar foto agora
+         Tirar foto agora
       </button>
       
       <button class="btn btn-outline-secondary py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirGaleria">
-        <span>📁</span> Escolher foto da galeria
-      </button>
-
-      <button class="btn btn-outline-info py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirVideoCamera">
-        <span>🎥</span> Gravar vídeo (máx. 30s)
-      </button>
-
-      <button class="btn btn-outline-dark py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirVideoGaleria">
-        <span>📁</span> Escolher vídeo da galeria
+         Escolher foto da galeria
       </button>
     </div>
 
@@ -77,8 +69,6 @@ const mediaType = ref(null)
 
 const abrirCamera = () => inputCamera.value.click()
 const abrirGaleria = () => inputGaleria.value.click()
-const abrirVideoCamera = () => inputVideoCamera.value.click()
-const abrirVideoGaleria = () => inputVideoGaleria.value.click()
 
 const manipularArquivo = (event) => {
   const arquivo = event.target.files[0]

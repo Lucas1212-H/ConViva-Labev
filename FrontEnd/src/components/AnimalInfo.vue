@@ -65,15 +65,6 @@
             </div>
           </dl>
         </section>
-
-        <article class="map-card" aria-labelledby="map-title">
-          <header class="mb-3">
-            <h2 id="map-title" class="card-heading mb-1">Mapa de Ocorrências</h2>
-            <p class="text-body-secondary mb-0">Os pontos exibidos abaixo representam as ocorrências vinculadas à espécie.</p>
-          </header>
-
-          <div id="mapaEspecie" class="mapa-especie" role="application" aria-label="Mapa de ocorrências da espécie"></div>
-        </article>
       </section>
 
       <section v-else class="state-panel text-center py-5">

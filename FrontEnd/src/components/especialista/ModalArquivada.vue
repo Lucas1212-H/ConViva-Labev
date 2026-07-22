@@ -66,15 +66,6 @@
               </div>
             </div>
 
-            <!-- Map placeholder -->
-            <div class="map-placeholder rounded-3 mb-3">
-              <div class="text-center text-muted py-4">
-                <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
-                <p class="small m-0">Mapa da localização</p>
-                <p class="small text-muted">{{ denuncia.latitude }}, {{ denuncia.longitude }}</p>
-              </div>
-            </div>
-
             <h5 class="fw-bold mb-3 mt-4">Informações Técnicas do Registro</h5>
             
             <div class="info-grid mb-3">
