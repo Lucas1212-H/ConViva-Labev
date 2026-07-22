@@ -1,7 +1,9 @@
 <template>
-  <div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center py-4 painel-autenticacao">
-    <div class="card card-custom border-0 p-4 p-sm-5 shadow w-100 text-dark">
-      <div class="card-body">
+  <div>
+    <NavBarPublic />
+    <div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center py-4 painel-autenticacao">
+      <div class="card card-custom border-0 p-4 p-sm-5 shadow w-100 text-dark">
+        <div class="card-body">
         
         <div v-if="cadastroSolicitado" class="text-center py-4">
           <div class="fs-1 mb-3">📩</div>
@@ -51,12 +53,14 @@
 
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue'
 import axios from 'axios'
+import NavBarPublic from '@/components/NavBarPublic.vue'
 
 const emit = defineEmits(['mudarTela'])
 

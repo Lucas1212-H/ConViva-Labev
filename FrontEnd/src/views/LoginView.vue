@@ -1,13 +1,15 @@
 <template>
-  <div class="login-page d-flex align-items-center justify-content-center">
-    <div class="container">
-      <div class="row align-items-center justify-content-center">
-        <div class="col-md-5 d-none d-md-block text-center">
-          <img src="@/assets/images/capivara-login.png" alt="Capivara" class="img-fluid hero-img">
-        </div>
-        
-        <div class="col-md-6">
-          <div class="auth-card shadow-lg p-5">
+  <div>
+    <NavBarPublic />
+    <div class="login-page d-flex align-items-center justify-content-center">
+      <div class="container">
+        <div class="row align-items-center justify-content-center">
+          <div class="col-md-5 d-none d-md-block text-center">
+            <img src="@/assets/images/capivara-login.png" alt="Capivara" class="img-fluid hero-img">
+          </div>
+          
+          <div class="col-md-6">
+            <div class="auth-card shadow-lg p-5">
             <h2 class="auth-title mb-4">Login Organizacional</h2>
             
             <UiMessage
@@ -63,6 +65,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -71,6 +74,7 @@ import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import UiMessage from '@/components/UiMessage.vue'
+import NavBarPublic from '@/components/NavBarPublic.vue'
 
 const router = useRouter()
 const { login, carregando: carregandoAuth } = useAuth()

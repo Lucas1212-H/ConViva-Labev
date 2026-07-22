@@ -1,9 +1,11 @@
 <template>
-  <div class="login-page d-flex align-items-center justify-content-center">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="auth-card shadow-lg p-5">
+  <div>
+    <NavBarPublic />
+    <div class="login-page d-flex align-items-center justify-content-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="auth-card shadow-lg p-5">
             <h2 class="auth-title mb-4">Redefinir Senha</h2>
             <p class="text-dark mb-4">Digite sua nova senha abaixo.</p>
             
@@ -69,12 +71,14 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import NavBarPublic from '@/components/NavBarPublic.vue'
 import axios from 'axios'
 
 const route = useRoute()

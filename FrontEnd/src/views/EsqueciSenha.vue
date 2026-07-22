@@ -1,9 +1,11 @@
 <template>
-  <div class="login-page d-flex align-items-center justify-content-center">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="auth-card shadow-lg p-5">
+  <div>
+    <NavBarPublic />
+    <div class="login-page d-flex align-items-center justify-content-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="auth-card shadow-lg p-5">
             <h2 class="auth-title mb-4">Esqueci Minha Senha</h2>
             <p class="text-dark mb-4">Informe o e-mail cadastrado e enviaremos um link para você redefinir sua senha.</p>
             
@@ -47,12 +49,14 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import NavBarPublic from '@/components/NavBarPublic.vue'
 
 const email = ref('')
 const carregando = ref(false)

@@ -22,88 +22,17 @@
                         </option>
                     </select>
                     
-                    <label for="ordem">Ordem</label>
-                    <div class="ordem-container">
-                        <div class="radio-group mb-2">
-                            <label class="radio-label">
-                                <input type="radio" v-model="modoOrdem" value="selecionar" :disabled="!especie.id_classe">
-                                Selecionar existente
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" v-model="modoOrdem" value="criar" :disabled="!especie.id_classe">
-                                Criar nova
-                            </label>
-                        </div>
-                        
-                        <select 
-                            v-if="modoOrdem === 'selecionar'" 
-                            name="Ordem" 
-                            id="ordem" 
-                            v-model="especie.id_ordem" 
-                            @change="carregarFamilias" 
-                            :disabled="!especie.id_classe"
-                        >
-                            <option value="" disabled selected>Selecione uma ordem</option>
-                            <option v-for="ordem in ordens" :key="ordem.id_ordem" :value="ordem.id_ordem">
-                                {{ ordem.nome_popular }} ({{ ordem.nome_cientifico }})
-                            </option>
-                        </select>
-                        
-                        <div v-if="modoOrdem === 'criar'" class="nova-ordem">
-                            <input 
-                                type="text" 
-                                placeholder="Nome Popular da Ordem" 
-                                v-model="novaOrdem.nome_popular"
-                                class="mb-2"
-                            >
-                            <input 
-                                type="text" 
-                                placeholder="Nome Científico da Ordem" 
-                                v-model="novaOrdem.nome_cientifico"
-                            >
-                        </div>
-                    </div>
+                    <label for="ordem_popular">Ordem (Nome Popular)</label>
+                    <input type="text" name="OrdemPopular" id="ordem_popular" placeholder="Ex: Carnívoros" v-model="especie.ordem_popular">
                     
-                    <label for="familia">Família</label>
-                    <div class="familia-container">
-                        <div class="radio-group mb-2">
-                            <label class="radio-label">
-                                <input type="radio" v-model="modoFamilia" value="selecionar" :disabled="!especie.id_ordem && !novaOrdem.nome_popular">
-                                Selecionar existente
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" v-model="modoFamilia" value="criar" :disabled="!especie.id_ordem && !novaOrdem.nome_popular">
-                                Criar nova
-                            </label>
-                        </div>
-                        
-                        <select 
-                            v-if="modoFamilia === 'selecionar'" 
-                            name="Familia" 
-                            id="familia" 
-                            v-model="especie.id_familia" 
-                            :disabled="!especie.id_ordem"
-                        >
-                            <option value="" disabled selected>Selecione uma família</option>
-                            <option v-for="familia in familias" :key="familia.id_familia" :value="familia.id_familia">
-                                {{ familia.nome_popular }} ({{ familia.nome_cientifico }})
-                            </option>
-                        </select>
-                        
-                        <div v-if="modoFamilia === 'criar'" class="nova-familia">
-                            <input 
-                                type="text" 
-                                placeholder="Nome Popular da Família" 
-                                v-model="novaFamilia.nome_popular"
-                                class="mb-2"
-                            >
-                            <input 
-                                type="text" 
-                                placeholder="Nome Científico da Família" 
-                                v-model="novaFamilia.nome_cientifico"
-                            >
-                        </div>
-                    </div>
+                    <label for="ordem_cientifico">Ordem (Nome Científico)</label>
+                    <input type="text" name="OrdemCientifico" id="ordem_cientifico" placeholder="Ex: Carnivora" v-model="especie.ordem_cientifico">
+                    
+                    <label for="familia_popular">Família (Nome Popular)</label>
+                    <input type="text" name="FamiliaPopular" id="familia_popular" placeholder="Ex: Felídeos" v-model="especie.familia_popular">
+                    
+                    <label for="familia_cientifico">Família (Nome Científico)</label>
+                    <input type="text" name="FamiliaCientifico" id="familia_cientifico" placeholder="Ex: Felidae" v-model="especie.familia_cientifico">
                 </fieldset>
 
                 <fieldset>
@@ -177,8 +106,10 @@ export default {
         nome_cientifico: '',
         descricao: '',
         id_classe: '',
-        id_ordem: '',
-        id_familia: ''
+        ordem_popular: '',
+        ordem_cientifico: '',
+        familia_popular: '',
+        familia_cientifico: ''
       },
       
       // Estados de carregamento
@@ -188,25 +119,9 @@ export default {
       // Dados vindo da API
       ocorrenciasPublicadas: [],
       classes: [],
-      ordens: [],
-      familias: [],
 
       // Caixinha (Array) que guarda automaticamente os IDs dos checkboxes marcados
-      ocorrenciasSelecionadas: [],
-
-      // Modo de seleção/criação
-      modoOrdem: 'selecionar',
-      modoFamilia: 'selecionar',
-
-      // Dados para criar nova ordem/familia
-      novaOrdem: {
-        nome_popular: '',
-        nome_cientifico: ''
-      },
-      novaFamilia: {
-        nome_popular: '',
-        nome_cientifico: ''
-      }
+      ocorrenciasSelecionadas: []
     }
   },
   methods: {
@@ -217,48 +132,6 @@ export default {
       } catch (error) {
         console.error('Erro ao buscar classes:', error);
         this.classes = [];
-      }
-    },
-
-    async carregarOrdens() {
-      this.especie.id_ordem = '';
-      this.especie.id_familia = '';
-      this.familias = [];
-      
-      if (!this.especie.id_classe) {
-        this.ordens = [];
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/ordens?id_classe=${this.especie.id_classe}`);
-        this.ordens = response.data || [];
-      } catch (error) {
-        console.error('Erro ao buscar ordens:', error);
-        this.ordens = [];
-      }
-    },
-
-    async carregarFamilias() {
-      this.especie.id_familia = '';
-      
-      // Se estiver criando nova ordem, não carrega famílias
-      if (this.modoOrdem === 'criar') {
-        this.familias = [];
-        return;
-      }
-      
-      if (!this.especie.id_ordem) {
-        this.familias = [];
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/familias?id_ordem=${this.especie.id_ordem}`);
-        this.familias = response.data || [];
-      } catch (error) {
-        console.error('Erro ao buscar famílias:', error);
-        this.familias = [];
       }
     },
 
@@ -279,24 +152,24 @@ export default {
       try {
         this.salvando = true;
 
-        let ordemId = this.especie.id_ordem;
-        let familiaId = this.especie.id_familia;
+        let ordemId = null;
+        let familiaId = null;
 
-        // Criar nova ordem se necessário
-        if (this.modoOrdem === 'criar' && this.novaOrdem.nome_popular && this.novaOrdem.nome_cientifico) {
+        // Criar ordem se fornecida
+        if (this.especie.ordem_popular && this.especie.ordem_cientifico) {
           const responseOrdem = await axios.post(`${API_BASE_URL}/api/ordens`, {
-            nome_popular: this.novaOrdem.nome_popular,
-            nome_cientifico: this.novaOrdem.nome_cientifico,
+            nome_popular: this.especie.ordem_popular,
+            nome_cientifico: this.especie.ordem_cientifico,
             id_classe: this.especie.id_classe
           });
           ordemId = responseOrdem.data.id_ordem;
         }
 
-        // Criar nova família se necessário
-        if (this.modoFamilia === 'criar' && this.novaFamilia.nome_popular && this.novaFamilia.nome_cientifico) {
+        // Criar família se fornecida
+        if (this.especie.familia_popular && this.especie.familia_cientifico) {
           const responseFamilia = await axios.post(`${API_BASE_URL}/api/familias`, {
-            nome_popular: this.novaFamilia.nome_popular,
-            nome_cientifico: this.novaFamilia.nome_cientifico,
+            nome_popular: this.especie.familia_popular,
+            nome_cientifico: this.especie.familia_cientifico,
             id_ordem: ordemId
           });
           familiaId = responseFamilia.data.id_familia;
@@ -329,13 +202,11 @@ export default {
           nome_cientifico: '',
           descricao: '',
           id_classe: '',
-          id_ordem: '',
-          id_familia: ''
+          ordem_popular: '',
+          ordem_cientifico: '',
+          familia_popular: '',
+          familia_cientifico: ''
         };
-        this.novaOrdem = { nome_popular: '', nome_cientifico: '' };
-        this.novaFamilia = { nome_popular: '', nome_cientifico: '' };
-        this.modoOrdem = 'selecionar';
-        this.modoFamilia = 'selecionar';
         this.ocorrenciasSelecionadas = [];
         this.$router.push('/catalogo');
 
@@ -359,42 +230,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.radio-group {
-  display: flex;
-  gap: 1rem;
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.radio-label input[type="radio"] {
-  cursor: pointer;
-}
-
-.nova-ordem,
-.nova-familia {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.nova-ordem input,
-.nova-familia input {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 0.375rem;
-  font-size: 0.9rem;
-}
-
-.ordem-container,
-.familia-container {
-  margin-bottom: 1rem;
-}
-</style>
