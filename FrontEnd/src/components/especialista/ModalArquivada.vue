@@ -25,10 +25,6 @@
                 <span class="value">{{ formatarDataHora(denuncia.created_at) }}</span>
               </div>
               <div class="info-item">
-                <span class="label">Distinção Biológica</span>
-                <span class="value">{{ denuncia.distincao_biologica || 'Não informado' }}</span>
-              </div>
-              <div class="info-item">
                 <span class="label">Tipo Animal</span>
                 <span class="value">{{ denuncia.tipo_animal || 'Não informado' }}</span>
               </div>

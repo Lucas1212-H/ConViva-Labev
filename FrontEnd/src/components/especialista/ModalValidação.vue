@@ -37,10 +37,6 @@
                 <span class="value">{{ denuncia.data || denuncia.date || 'Data não informada' }}</span>
               </div>
               <div class="info-item">
-                <span class="label">Distinção Biológica</span>
-                <span class="value">{{ denuncia.tipo || denuncia.type || 'Tipo não informado' }}</span>
-              </div>
-              <div class="info-item">
                 <span class="label">Localização</span>
                 <span class="value">{{ denuncia.local || 'Não informada' }}</span>
               </div>
