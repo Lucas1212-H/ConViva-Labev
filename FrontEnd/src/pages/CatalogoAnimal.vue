@@ -90,6 +90,14 @@
                   <h2 class="h5 fw-bold text-dark mb-1">{{ especie.nome_popular }}</h2>
                   <small class="text-muted fst-italic d-block mb-2">{{ especie.nome_cientifico }}</small>
                   <p class="text-secondary small m-0">{{ especie.descricao }}</p>
+                  <div v-if="especie.ordem || especie.familia" class="mt-2">
+                    <small v-if="especie.ordem" class="text-muted d-block">
+                      <span class="fw-semibold">Ordem:</span> {{ especie.ordem?.nome_popular }} ({{ especie.ordem?.nome_cientifico }})
+                    </small>
+                    <small v-if="especie.familia" class="text-muted d-block">
+                      <span class="fw-semibold">Família:</span> {{ especie.familia?.nome_popular }} ({{ especie.familia?.nome_cientifico }})
+                    </small>
+                  </div>
                 </div>
 
                 <div class="species-map-wrap" @click.stop>

@@ -30,7 +30,7 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th>Animal</th>
+                <th>Número de Registro</th>
                 <th>Localização</th>
                 <th>Data</th>
                 <th>Status</th>
@@ -40,7 +40,7 @@
             <tbody>
               <tr v-for="d in denunciasFiltradas" :key="d.id">
                 <td>
-                  <span class="fw-bold">{{ d.animal }}</span>
+                  <span class="fw-bold">LABEV{{ String(d.id).padStart(2, '0') }}</span>
                   <div v-if="d.assigned">
                     <small class="text-muted d-block">Alocado: {{ d.assigned }}</small>
                   </div>

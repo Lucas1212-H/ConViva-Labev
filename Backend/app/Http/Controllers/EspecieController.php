@@ -55,7 +55,9 @@ class EspecieController extends Controller
             'ordem:id_ordem,nome_popular,nome_cientifico',
             'familia:id_familia,nome_popular,nome_cientifico',
             'ocorrencias' => function ($query) {
-                $query->select('id', 'especie_id', 'latitude', 'longitude', 'situacao_animal', 'ponto_referencia', 'created_at');
+                $query->select('id', 'especie_id', 'latitude', 'longitude', 'situacao_animal', 'ponto_referencia', 'created_at')
+                    ->whereNotNull('latitude')
+                    ->whereNotNull('longitude');
             },
         ])
             ->where('id_especie', $id)

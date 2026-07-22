@@ -49,7 +49,7 @@
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light">
                 <tr>
-                  <th scope="col">Animal</th>
+                  <th scope="col">Número de Registro</th>
                   <th scope="col">Denunciante</th>
                   <th scope="col">Local</th>
                   <th scope="col">Data</th>
@@ -63,7 +63,7 @@
                   class="clickable-row"
                   @click="$emit('selecionarPendente', item)"
                 >
-                  <td class="fw-bold">{{ item.animal }}</td>
+                  <td class="fw-bold">LABEV{{ String(item.id).padStart(2, '0') }}</td>
                   <td>{{ item.denunciante }}</td>
                   <td><small class="text-muted">{{ item.local }}</small></td>
                   <td><small>{{ item.data }}</small></td>
@@ -102,7 +102,7 @@
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light">
                 <tr>
-                  <th scope="col">Animal</th>
+                  <th scope="col">Número de Registro</th>
                   <th scope="col">Denunciante</th>
                   <th scope="col">Processo</th>
                   <th scope="col">Data</th>
@@ -117,7 +117,7 @@
                   class="clickable-row"
                   @click="$emit('selecionarHistorico', item)"
                 >
-                  <td class="fw-bold">{{ item.animal }}</td>
+                  <td class="fw-bold">LABEV{{ String(item.id).padStart(2, '0') }}</td>
                   <td>{{ item.denunciante }}</td>
                   <td>
                     <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis process-badge">

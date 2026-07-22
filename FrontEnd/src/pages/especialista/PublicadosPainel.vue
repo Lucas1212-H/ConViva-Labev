@@ -22,7 +22,7 @@
             </thead>
             <tbody>
               <tr v-for="item in publicados" :key="item.id" class="clickable-row" @click="focarNoAnimal(item)">
-                <td class="fw-bold">🐾 {{ item.animal }}</td>
+                <td class="fw-bold">{{ item.animal }}</td>
                 <td>{{ item.local }}</td>
                 <td>{{ item.data }}</td>
                 <td>
