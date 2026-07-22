@@ -18,20 +18,20 @@
       <div class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.7rem; letter-spacing: 0.8px;">Contato</div>
       <div class="d-flex gap-2 mb-2">
         <button type="button" @click="contatoTipo = 'telefone'" :class="contatoTipo === 'telefone' ? 'btn btn-success' : 'btn btn-outline-secondary'" class="btn btn-sm">Telefone</button>
-        <button type="button" @click="contatoTipo = 'email'" :class="contatoTipo === 'email' ? 'btn btn-success' : 'btn btn-outline-secondary'" class="btn btn-sm">Email</button>
+        <button type="button" @click="contatoTipo = 'instagram'" :class="contatoTipo === 'instagram' ? 'btn btn-success' : 'btn btn-outline-secondary'" class="btn btn-sm">Instagram</button>
       </div>
       <input
         :value="contatoValor"
         @input="onContatoInput"
-        :type="contatoTipo === 'email' ? 'email' : 'tel'"
-        :inputmode="contatoTipo === 'email' ? 'email' : 'numeric'"
-        :maxlength="contatoTipo === 'email' ? 120 : 11"
-        :placeholder="contatoTipo === 'email' ? 'seu@email.com' : '99 99999-9999'"
-        :autocomplete="contatoTipo === 'email' ? 'email' : 'tel'"
+        :type="contatoTipo === 'instagram' ? 'text' : 'tel'"
+        :inputmode="contatoTipo === 'instagram' ? 'text' : 'numeric'"
+        :maxlength="contatoTipo === 'instagram' ? 30 : 11"
+        :placeholder="contatoTipo === 'instagram' ? '@seuusuario' : '99 99999-9999'"
+        :autocomplete="contatoTipo === 'instagram' ? 'off' : 'tel'"
         class="form-control shadow-none rounded-3"
       />
       <div class="form-text small text-muted mt-1">
-        {{ contatoTipo === 'email' ? 'Use um e-mail válido.' : 'Digite somente números, sem espaços, parênteses ou traços.' }}
+        {{ contatoTipo === 'instagram' ? 'Digite seu @ do Instagram.' : 'Digite somente números, sem espaços, parênteses ou traços.' }}
       </div>
     </div>
 
@@ -72,7 +72,7 @@ const contatoValido = computed(() => {
     return /^\d{10,11}$/.test(valor)
   }
 
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor)
+  return /^@?[a-zA-Z0-9._]{1,30}$/.test(valor)
 })
 
 const podeAvancar = computed(() => nomeValido.value && contatoValido.value)
@@ -85,7 +85,7 @@ const onContatoInput = (event) => {
     return
   }
 
-  contatoValor.value = valorDigitado.slice(0, 120)
+  contatoValor.value = valorDigitado.slice(0, 30)
 }
 
 const enviar = () => {

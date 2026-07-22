@@ -54,15 +54,8 @@
             </div>
 
             <div v-else class="actions-stack">
-              <label class="small fw-semibold text-muted mb-1">Parecer Técnico</label>
-              <textarea
-                v-model="parecer"
-                class="form-control mb-2"
-                rows="4"
-                placeholder="Escreva o parecer técnico..."
-              ></textarea>
+              <p class="text-muted small mb-2">Esta denúncia está alocada para você. Vá para a aba "Denúncias Pendentes" para preencher as informações técnicas.</p>
               <div class="d-flex gap-2">
-                <button class="btn btn-success flex-grow-1" @click="confirmar">Aprovar</button>
                 <button class="btn btn-light border flex-grow-1" @click="$emit('fechar')">Fechar</button>
               </div>
             </div>

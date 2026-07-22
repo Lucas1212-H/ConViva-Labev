@@ -14,7 +14,7 @@
           v-if="abaAtiva === 'triagem'"
           :denuncias="denunciasTriagem"
           :totalRegistros="totalRegistros"
-          :pendentes="pendentes"
+          :pendentes="pendentesCount"
           :urgentes="urgentes"
           :especies="especies"
           @validar="handleValidar"
@@ -25,7 +25,9 @@
         <HistoricoPainel 
           v-else-if="abaAtiva === 'arquivadas'"
           :arquivadas="denunciasArquivadas"
-          @selecionarHistorico="abrirHistorico"
+          :pendentes="denunciasPendentes"
+          @selecionarHistorico="abrirArquivada"
+          @selecionarPendente="abrirPendente"
           @alternarPublicacao="alternarPublicacaoArquivada"
         />
 
@@ -40,6 +42,7 @@
       </div>
     </div>
 
+    <!-- Modal de Triagem (Validação) -->
     <ModalValidacao 
       :denuncia="selectedDenuncia" 
       @fechar="selectedDenuncia = null" 
@@ -49,10 +52,17 @@
       @publicar="handlePublicar"
     />
 
-    <ModalHistoricoAnimal
-      :item="historicoSelecionado"
-      @fechar="historicoSelecionado = null"
-      @publicar="handlePublicarHistorico"
+    <!-- Modal de Denúncia Pendente (em atendimento) -->
+    <ModalEmAnalise
+      :denuncia="pendenteSelecionada"
+      @fechar="pendenteSelecionada = null"
+      @arquivar="handleArquivarComDados"
+    />
+
+    <!-- Modal de Denúncia Arquivada (visualização final) -->
+    <ModalArquivada
+      :denuncia="arquivadaSelecionada"
+      @fechar="arquivadaSelecionada = null"
     />
   </div>
 </template>
@@ -63,9 +73,10 @@ import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 import ModalValidacao from '@/components/especialista/ModalValidação.vue';
-import ModalHistoricoAnimal from '@/components/especialista/ModalHistoricoAnimal.vue';
+import ModalEmAnalise from '@/components/especialista/ModalEmAnalise.vue';
+import ModalArquivada from '@/components/especialista/ModalArquivada.vue';
 
-// Importação das novas subpáginas estruturadas
+// Importação das subpáginas estruturadas
 import TriagemPainel from '@/pages/especialista/TriagemPainel.vue';
 import HistoricoPainel from '@/pages/especialista/HistoricoPainel.vue';
 import PublicadosPainel from '@/pages/especialista/PublicadosPainel.vue';
@@ -75,8 +86,11 @@ import { resolveStorageUrl } from '@/utils/mediaUrl';
 
 const FALLBACK_OCORRENCIA_IMAGE = 'https://picsum.photos/seed/fauna/640/360';
 
-const selectedDenuncia = ref(null);
-const historicoSelecionado = ref(null);
+// --- State ---
+const selectedDenuncia = ref(null);    // modal triagem
+const pendenteSelecionada = ref(null); // modal em análise (pendentes)
+const arquivadaSelecionada = ref(null);// modal arquivada
+
 const route = useRoute();
 const router = useRouter();
 const abasValidas = new Set(['triagem', 'arquivadas', 'publicados', 'analises']);
@@ -84,13 +98,26 @@ const normalizarAba = (valor) => (abasValidas.has(String(valor)) ? String(valor)
 const abaAtiva = ref(normalizarAba(route.query.aba));
 const carregando = ref(true);
 
-const denunciasTriagem = ref([]);
-const denunciasArquivadas = ref([]);
+// Listas separadas
+const denunciasTriagem = ref([]);      // ainda não alocadas (status Pendente)
+const denunciasPendentes = ref([]);    // alocadas / em atendimento
+const denunciasArquivadas = ref([]);   // finalizadas
 const publicadosLista = ref([]);
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-
 const API_BASE = isLocal ? 'http://localhost:8000/api/ocorrencias' : 'https://conviva-labev.onrender.com/api/ocorrencias';
+
+// --- Helper para obter nome do usuário logado ---
+const getCurrentUserName = () => {
+  try {
+    const stored = localStorage.getItem('usuarioLogado')
+    if (!stored) return null
+    const u = JSON.parse(stored)
+    return u.nome || u.email || null
+  } catch (e) {
+    return null
+  }
+}
 
 const buscarDadosDoBanco = async () => {
   try {
@@ -101,44 +128,103 @@ const buscarDadosDoBanco = async () => {
       axios.get(`${API_BASE}/publicados`).catch(() => ({ data: [] }))
     ]);
 
-    denunciasTriagem.value = resPendentes.data.map(item => ({
+    // Combina todas as denúncias para separá-las estritamente pelo status no frontend
+    const todasPendentes = resPendentes.data || [];
+    const todosArquivados = resArquivados.data || [];
+    
+    // Helper de mapeamento completo (cobre campos de ambas as origens)
+    const mapearItem = (item) => ({
       id: item.id,
       animal: item.tipo_animal,
-      titulo: `${item.distincao_biologica} de ${item.tipo_animal}`,
+      tipo_animal: item.tipo_animal,
+      titulo: `${item.distincao_biologica || 'Animal'} de ${item.tipo_animal || 'espécie não informada'}`,
       denunciante: item.denunciante_nome,
+      denunciante_nome: item.denunciante_nome,
       tipo: item.distincao_biologica,
       distincao_biologica: item.distincao_biologica,
+      distincaoBiologica: item.distincao_biologica,
       descricao: item.descricao,
+      descricao_ocorrencia: item.descricao,
       imagem: resolveStorageUrl(item.foto_url || item.foto_path, FALLBACK_OCORRENCIA_IMAGE),
+      foto_url: item.foto_url || null,
+      video_url: item.video_url || null,
       local: item.ponto_referencia,
       data: new Date(item.created_at).toLocaleDateString('pt-BR'),
       created_at: item.created_at,
       situacao_animal: item.situacao_animal,
-      status: item.situacao_animal,
+      status: item.status || item.situacao_animal,
       statusWorkflow: item.status,
-      parecer_tecnico: item.parecer_tecnico,
-      assigned: item.parecer_tecnico ? 'Especialista' : null,
-      coordenadas: { lat: item.latitude !== null ? parseFloat(item.latitude) : null, lng: item.longitude !== null ? parseFloat(item.longitude) : null }
-    }));
-
-    denunciasArquivadas.value = resArquivados.data.map(item => ({
-      id: item.id,
-      animal: item.tipo_animal,
-      denunciante: item.denunciante_nome,
-      distincaoBiologica: item.distincao_biologica,
-      imagem: resolveStorageUrl(item.foto_url || item.foto_path, FALLBACK_OCORRENCIA_IMAGE),
-      local: item.ponto_referencia,
-      data: new Date(item.created_at).toLocaleDateString('pt-BR'),
       statusFinal: item.status,
+      parecer_tecnico: item.parecer_tecnico,
+      assigned: item.parecer_tecnico || item.registrado_por ? (item.registrado_por || 'Especialista') : null,
+      
+      // Localização
+      latitude: item.latitude !== null ? parseFloat(item.latitude) : null,
+      longitude: item.longitude !== null ? parseFloat(item.longitude) : null,
+      descricao_local_exato: item.descricao_local_exato || null,
+      ponto_referencia: item.ponto_referencia || null,
+      coordenadas: { 
+        lat: item.latitude !== null ? parseFloat(item.latitude) : null, 
+        lng: item.longitude !== null ? parseFloat(item.longitude) : null 
+      },
+      
+      // Campos técnicos
+      habitat: item.habitat || null,
+      microhabitat: item.microhabitat || null,
+      classe: item.classe || null,
+      ordem: item.ordem || null,
+      familia: item.familia || null,
+      especie: item.especie || null,
+      que_coletou: item.que_coletou || null,
+      destino: item.destino || null,
+      registrado_por: item.registrado_por || null,
+      
+      // Novos campos
+      classe_etaria: item.classe_etaria || null,
+      tempo: item.tempo || null,
+      campo_encontrado: item.campo_encontrado || null,
+      observacoes: item.observacoes || null,
+      codigo_registro: item.codigo_registro || `LABEV${String(item.id).padStart(2, '0')}`,
+      
+      // Processo Final para exibição nas arquivadas
       publicadoNoMapa: !!item.publicado_no_mapa,
       processoFinal: item.status === 'Publicado'
         ? (item.publicado_no_mapa ? 'Publicado no mapa' : 'Publicado fora do mapa')
         : (item.status === 'Resolvido' ? 'Resgate > Arquivamento' : 'Falso Alarme > Descarte'),
+        
       historico: [
         { titulo: 'Denúncia recebida', data: new Date(item.created_at).toLocaleDateString('pt-BR'), descricao: item.descricao },
-        { titulo: 'Finalizado', data: new Date(item.updated_at).toLocaleDateString('pt-BR'), descricao: item.parecer_tecnico || 'Sem parecer.' }
+        { titulo: 'Finalizado', data: new Date(item.updated_at || item.created_at).toLocaleDateString('pt-BR'), descricao: item.parecer_tecnico || 'Sem parecer.' }
       ]
-    }));
+    });
+
+    const todasDenunciasUnificadas = [...todasPendentes, ...todosArquivados].map(mapearItem);
+    
+    // Para evitar duplicatas caso a API retorne a mesma denúncia em ambas rotas
+    const mapaUnicas = new Map();
+    todasDenunciasUnificadas.forEach(item => mapaUnicas.set(item.id, item));
+    const listaUnica = Array.from(mapaUnicas.values());
+
+    // 1. Triagem: status Pendente (ainda não alocada)
+    // Assumindo que qualquer coisa diferente dos status finais ou 'Em Atendimento' fica na triagem
+    denunciasTriagem.value = listaUnica.filter(item => 
+      item.status !== 'Em Atendimento' && 
+      item.status !== 'Resolvido' && 
+      item.status !== 'Falso Alarme' && 
+      item.status !== 'Publicado'
+    );
+
+    // 2. Pendentes em atendimento: status 'Em Atendimento'
+    denunciasPendentes.value = listaUnica.filter(item => 
+      item.status === 'Em Atendimento'
+    );
+
+    // 3. Arquivadas: status finais (Resolvido, Falso Alarme, Publicado)
+    denunciasArquivadas.value = listaUnica.filter(item => 
+      item.status === 'Resolvido' || 
+      item.status === 'Falso Alarme' || 
+      item.status === 'Publicado'
+    );
 
     publicadosLista.value = resPublicados.data.map(item => ({
       id: item.id,
@@ -157,22 +243,22 @@ const buscarDadosDoBanco = async () => {
 onMounted(() => { buscarDadosDoBanco(); });
 
 // --- Métricas Globais ---
-const totalRegistros = computed(() => denunciasTriagem.value.length + denunciasArquivadas.value.length);
-const pendentes = computed(() => denunciasTriagem.value.length);
+const totalRegistros = computed(() => denunciasTriagem.value.length + denunciasPendentes.value.length + denunciasArquivadas.value.length);
+const pendentesCount = computed(() => denunciasTriagem.value.length);
 const urgentes = computed(() => denunciasTriagem.value.filter(item => item.status === 'Morto' || item.status === 'Ferido').length);
 const especies = computed(() => new Set([...denunciasTriagem.value, ...denunciasArquivadas.value].map(item => item.animal)).size);
 
 const mudarAba = (aba) => {
   abaAtiva.value = aba;
   selectedDenuncia.value = null;
-  historicoSelecionado.value = null;
+  pendenteSelecionada.value = null;
+  arquivadaSelecionada.value = null;
   
   router.replace({
     name: 'specialist-area',
     query: { ...route.query, aba },
   });
 };
-onMounted(() => { buscarDadosDoBanco(); });
 
 watch(
   () => route.query.aba,
@@ -181,15 +267,26 @@ watch(
   }
 );
 
+// --- Handlers de abertura de modais ---
 const handleValidar = (d) => {
-  historicoSelecionado.value = null;
+  pendenteSelecionada.value = null;
+  arquivadaSelecionada.value = null;
   selectedDenuncia.value = d;
 };
-const abrirHistorico = (item) => {
+
+const abrirPendente = (item) => {
   selectedDenuncia.value = null;
-  historicoSelecionado.value = item;
+  arquivadaSelecionada.value = null;
+  pendenteSelecionada.value = item;
 };
 
+const abrirArquivada = (item) => {
+  selectedDenuncia.value = null;
+  pendenteSelecionada.value = null;
+  arquivadaSelecionada.value = item;
+};
+
+// --- Ações de triagem ---
 const processarAprovacao = async (dadosAprovacao) => {
   const denunciaAtual = selectedDenuncia.value;
   if (!denunciaAtual) return;
@@ -206,10 +303,22 @@ const processarAprovacao = async (dadosAprovacao) => {
   }
 };
 
-const handleAlocar = ({ denunciaId, usuario }) => {
-  const idx = denunciasTriagem.value.findIndex(x => x.id === denunciaId);
-  if (idx > -1) { denunciasTriagem.value[idx].assigned = usuario; }
-  alert(`Alocado com sucesso!`);
+const handleAlocar = async ({ denunciaId }) => {
+  try {
+    // Muda status para 'Em Atendimento' no backend
+    await axios.put(`${API_BASE}/${denunciaId}/avaliar`, {
+      status: 'Em Atendimento',
+      registrado_por: getCurrentUserName() || 'Especialista'
+    });
+    selectedDenuncia.value = null;
+    alert('Denúncia alocada com sucesso! Acesse a aba "Denúncias" > "Pendentes" para preencher as informações técnicas.');
+    // Muda automaticamente para a aba de denúncias e recarrega
+    mudarAba('arquivadas');
+    await buscarDadosDoBanco();
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao alocar a denúncia.");
+  }
 };
 
 const handleArquivar = async ({ denunciaId }) => {
@@ -232,7 +341,7 @@ const handlePublicar = async ({ denunciaId }) => {
       status: 'Publicado'
     });
     selectedDenuncia.value = null;
-    alert('Ocorrência publicada no mapa!  ');
+    alert('Ocorrência publicada no mapa!');
     buscarDadosDoBanco();
   } catch (error) {
     alert("Erro ao publicar.");
@@ -240,6 +349,25 @@ const handlePublicar = async ({ denunciaId }) => {
   }
 };
 
+// --- Arquivar denúncia pendente com dados técnicos ---
+const handleArquivarComDados = async (dados) => {
+  const { denunciaId, ...camposTecnicos } = dados;
+  try {
+    await axios.put(`${API_BASE}/${denunciaId}/arquivar`, {
+      status: 'Resolvido',
+      parecer_tecnico: `Arquivado por ${camposTecnicos.registrado_por || 'Especialista'}.`,
+      ...camposTecnicos
+    });
+    pendenteSelecionada.value = null;
+    alert('Denúncia arquivada com sucesso!');
+    buscarDadosDoBanco();
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao arquivar a denúncia.");
+  }
+};
+
+// --- Ações de publicação nas arquivadas ---
 const alternarPublicacaoArquivada = async (item) => {
   try {
     if (item.publicadoNoMapa) {
@@ -251,33 +379,12 @@ const alternarPublicacaoArquivada = async (item) => {
       })
       alert('Ocorrência publicada no mapa!')
     }
-
     await buscarDadosDoBanco()
   } catch (error) {
     console.error(error)
     alert('Erro ao atualizar a publicação da ocorrência.')
   }
 }
-
-const handlePublicarHistorico = async (item) => {
-  try {
-    if (item.publicadoNoMapa) {
-      await axios.put(`${API_BASE}/${item.id}/despublicar`)
-      alert('Ocorrência removida do mapa!')
-    } else {
-      await axios.put(`${API_BASE}/${item.id}/publicar`, {
-        status: 'Publicado'
-      })
-      alert('Ocorrência publicada no mapa!')
-    }
-
-    historicoSelecionado.value = null;
-    await buscarDadosDoBanco();
-  } catch (error) {
-    alert('Erro ao publicar.');
-    console.error(error);
-  }
-};
 
 const gerarLaudo = (denuncia) => {
   const exportado = exportarLaudoOcorrencia(denuncia);

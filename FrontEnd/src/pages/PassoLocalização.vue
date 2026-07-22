@@ -37,9 +37,21 @@
         maxlength="120"
         autocomplete="off"
       />
-      <div class="form-text small text-muted mt-1">
-        Escreva uma descrição curta do local, se quiser ajudar no retorno.
+    </div>
+
+    <div class="mb-4">
+      <div class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.7rem; letter-spacing: 0.8px;">
+        Descrição Local Exato
       </div>
+      <input
+        v-model.trim="descricaoLocalExato"
+        type="text"
+        class="form-control shadow-none border-light-subtle rounded-3 text-dark text-opacity-75"
+        style="padding: 12px; font-size: 14px;"
+        placeholder="Ex.: calçada em frente ao portão principal, próximo à árvore"
+        maxlength="120"
+        autocomplete="off"
+      />
     </div>
 
     <button 
@@ -62,6 +74,7 @@ const emit = defineEmits(['proximo'])
 // Estados que vão armazenar os dados digitados/clicados
 const coordenadas = ref(null)
 const referencia = ref('')
+const descricaoLocalExato = ref('')
 
 let map = null
 let marker = null
@@ -114,7 +127,8 @@ const avancar = () => {
   if (coordenadas.value) {
     emit('proximo', {
       localizacao: coordenadas.value, // Aqui vai o objeto { lat: x, lng: y } real
-      referencia: referencia.value
+      referencia: referencia.value,
+      descricao_local_exato: descricaoLocalExato.value
     })
   }
 }

@@ -25,12 +25,29 @@ class OcorrenciaController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'ponto_referencia' => 'required|string',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'descricao_local_exato' => 'nullable|string|max:120',
+            'media' => 'nullable|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi|max:10240',
+            'media_type' => 'nullable|in:image,video',
         ]);
 
         $fotoPath = null;
-        if ($request->hasFile('foto')) {
-            $fotoPath = $this->cloudinary->upload($request->file('foto'), 'ocorrencias');
+        $videoPath = null;
+
+        if ($request->hasFile('media')) {
+            $mediaFile = $request->file('media');
+            $mediaType = $request->media_type ?? 'image';
+
+            try {
+                if ($mediaType === 'video') {
+                    $videoPath = $this->cloudinary->upload($mediaFile, 'ocorrencias');
+                } else {
+                    $fotoPath = $this->cloudinary->upload($mediaFile, 'ocorrencias');
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => 'Erro ao fazer upload da mídia: ' . $e->getMessage()
+                ], 500);
+            }
         }
 
         $ocorrencia = Ocorrencia::create([
@@ -44,7 +61,9 @@ class OcorrenciaController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'ponto_referencia' => $request->ponto_referencia,
+            'descricao_local_exato' => $request->descricao_local_exato,
             'foto_path' => $fotoPath,
+            'video_path' => $videoPath,
             'status' => 'Pendente',
         ]);
 
@@ -70,6 +89,22 @@ class OcorrenciaController extends Controller
         }
     }
 
+    public function indexEmAnalise()
+    {
+        try {
+            $ocorrencias = Ocorrencia::where('status', 'Em Análise')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(fn ($item) => $this->mapearOcorrencia($item));
+
+            return response()->json($ocorrencias, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao buscar ocorrências em análise: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function indexArquivadas()
     {
         try {
@@ -82,6 +117,94 @@ class OcorrenciaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Erro ao buscar arquivadas: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function alocar(Request $request, $id)
+    {
+        try {
+            $ocorrencia = Ocorrencia::where('id', $id)->first();
+
+            if (! $ocorrencia) {
+                return response()->json([
+                    'error' => 'Ocorrência não encontrada',
+                ], 404);
+            }
+
+            $request->validate([
+                'usuario' => 'required|string',
+            ]);
+
+            $ocorrencia->update([
+                'status' => 'Em Análise',
+                'assigned_to' => $request->usuario,
+            ]);
+
+            return response()->json([
+                'message' => 'Ocorrência alocada com sucesso!',
+                'data' => $this->mapearOcorrencia($ocorrencia),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao alocar: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function arquivar(Request $request, $id)
+    {
+        try {
+            $ocorrencia = Ocorrencia::where('id', $id)->first();
+
+            if (! $ocorrencia) {
+                return response()->json([
+                    'error' => 'Ocorrência não encontrada',
+                ], 404);
+            }
+
+            $request->validate([
+                'habitat' => 'nullable|string',
+                'microhabitat' => 'nullable|string',
+                'classe' => 'nullable|string',
+                'ordem' => 'nullable|string',
+                'familia' => 'nullable|string',
+                'especie' => 'nullable|string',
+                'que_coletou' => 'nullable|string',
+                'destino' => 'nullable|string',
+                'registrado_por' => 'required|string',
+                'classe_etaria' => 'nullable|string',
+                'tempo' => 'nullable|string',
+                'campo_encontrado' => 'nullable|string',
+                'observacoes' => 'nullable|string',
+                'codigo_registro' => 'nullable|string',
+            ]);
+
+            $ocorrencia->update([
+                'habitat' => $request->habitat,
+                'microhabitat' => $request->microhabitat,
+                'classe' => $request->classe,
+                'ordem' => $request->ordem,
+                'familia' => $request->familia,
+                'especie' => $request->especie,
+                'que_coletou' => $request->que_coletou,
+                'destino' => $request->destino,
+                'registrado_por' => $request->registrado_por,
+                'classe_etaria' => $request->classe_etaria,
+                'tempo' => $request->tempo,
+                'campo_encontrado' => $request->campo_encontrado,
+                'observacoes' => $request->observacoes,
+                'codigo_registro' => $request->codigo_registro,
+                'status' => 'Resolvido',
+            ]);
+
+            return response()->json([
+                'message' => 'Ocorrência arquivada com sucesso!',
+                'data' => $this->mapearOcorrencia($ocorrencia),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erro ao arquivar: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -129,7 +252,10 @@ class OcorrenciaController extends Controller
             'descricao_ocorrencia' => $ocorrencia->descricao_ocorrencia,
             'foto_path' => $ocorrencia->foto_path,
             'foto_url' => StorageUrl::publicUrl($ocorrencia->foto_path),
+            'video_path' => $ocorrencia->video_path,
+            'video_url' => StorageUrl::publicUrl($ocorrencia->video_path),
             'ponto_referencia' => $ocorrencia->ponto_referencia,
+            'descricao_local_exato' => $ocorrencia->descricao_local_exato,
             'created_at' => $ocorrencia->created_at,
             'updated_at' => $ocorrencia->updated_at,
             'status' => $ocorrencia->status,
@@ -138,6 +264,21 @@ class OcorrenciaController extends Controller
             'parecer_tecnico' => $ocorrencia->parecer_tecnico,
             'latitude' => $ocorrencia->latitude,
             'longitude' => $ocorrencia->longitude,
+            'assigned_to' => $ocorrencia->assigned_to,
+            'habitat' => $ocorrencia->habitat,
+            'microhabitat' => $ocorrencia->microhabitat,
+            'classe' => $ocorrencia->classe,
+            'ordem' => $ocorrencia->ordem,
+            'familia' => $ocorrencia->familia,
+            'especie' => $ocorrencia->especie,
+            'que_coletou' => $ocorrencia->que_coletou,
+            'destino' => $ocorrencia->destino,
+            'registrado_por' => $ocorrencia->registrado_por,
+            'classe_etaria' => $ocorrencia->classe_etaria,
+            'tempo' => $ocorrencia->tempo,
+            'campo_encontrado' => $ocorrencia->campo_encontrado,
+            'observacoes' => $ocorrencia->observacoes,
+            'codigo_registro' => $ocorrencia->codigo_registro,
         ];
     }
 

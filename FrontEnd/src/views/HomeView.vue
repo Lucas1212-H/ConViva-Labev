@@ -171,7 +171,7 @@
                         <img :src="animal.imagem" :alt="animal.nome" class="w-100 h-100" style="object-fit: cover;" />
                       </figure>
                       <div class="p-4">
-                        <span class="badge rounded-0 bg-success text-uppercase mb-2 small">{{ animal.categoria }}</span>
+                        <span class="badge rounded-0 bg-success text-uppercase mb-2 small">{{ animal.classe }}</span>
                         <h3 class="h4 fw-bold mb-1 text-dark text-truncate">{{ animal.nome }}</h3>
                         <p class="text-secondary small fst-italic mb-3 text-truncate">{{ animal.nomeCientifico }}</p>
                         <p class="text-body-secondary small mb-0 text-limit-3">{{ animal.descricao }}</p>
@@ -260,7 +260,7 @@ interface PublicadoMapa {
   }
 }
 
-type AnimalCatalogado = { id: number; nome: string; nomeCientifico: string; categoria: string; descricao: string; imagem: string }
+type AnimalCatalogado = { id: number; nome: string; nomeCientifico: string; classe: string; descricao: string; imagem: string }
 
 const noticias = ref<any[]>([])
 const carregandoNoticias = ref(true)
@@ -334,7 +334,7 @@ const carregarAnimaisCatalogados = async () => {
         id: especie.id_especie,
         nome: normalizarTexto(especie.nome_popular) || 'Espécie sem nome popular',
         nomeCientifico: normalizarTexto(especie.nome_cientifico) || 'Nome científico indisponível',
-        categoria: normalizarTexto(especie.categoria?.nome_popular) || 'Categoria não informada',
+        classe: normalizarTexto(especie.classe?.nome_popular) || 'Classe não informada',
         descricao: normalizarTexto(especie.descricao) || 'Sem descrição cadastrada.',
         imagem: urlImagem
       }

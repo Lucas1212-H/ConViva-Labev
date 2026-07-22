@@ -7,22 +7,23 @@
     </div>
 
     <h2 class="h4 fw-bold mb-1 text-dark">Evidência visual</h2>
-    <p class="small text-muted mb-4">Passo 3 de 3 — adicione uma foto</p>
+    <p class="small text-muted mb-4">Passo 3 de 3 — foto ou vídeo (opcional)</p>
 
     <div 
       class="border border-2 border-dashed rounded-4 bg-light d-flex align-items-center justify-content-center mb-4 position-relative overflow-hidden"
       style="height: 220px; border-style: dashed !important;"
     >
-      <div v-if="!imagemPreview" class="text-center text-secondary">
+      <div v-if="!mediaPreview" class="text-center text-secondary">
         <div class="display-6 mb-2">📸</div>
-        <p class="small m-0">Nenhuma foto selecionada</p>
+        <p class="small m-0">Nenhuma foto ou vídeo selecionado</p>
       </div>
       
       <div v-else class="w-100 h-100">
-        <img :src="imagemPreview" class="w-100 h-100 object-fit-cover" />
+        <img v-if="mediaType === 'image'" :src="mediaPreview" class="w-100 h-100 object-fit-cover" />
+        <video v-else :src="mediaPreview" class="w-100 h-100 object-fit-cover" controls />
         <button 
           class="btn btn-dark btn-sm position-absolute top-0 end-0 m-2 rounded-pill opacity-75"
-          @click="removerFoto"
+          @click="removerMedia"
         >
           ✕ Remover
         </button>
@@ -31,20 +32,29 @@
 
     <input type="file" accept="image/*" capture="environment" ref="inputCamera" class="d-none" @change="manipularArquivo" />
     <input type="file" accept="image/*" ref="inputGaleria" class="d-none" @change="manipularArquivo" />
+    <input type="file" accept="video/*" capture="environment" ref="inputVideoCamera" class="d-none" @change="manipularArquivo" />
+    <input type="file" accept="video/*" ref="inputVideoGaleria" class="d-none" @change="manipularArquivo" />
 
-    <div class="d-grid gap-2 mb-4" v-if="!imagemPreview">
+    <div class="d-grid gap-2 mb-4" v-if="!mediaPreview">
       <button class="btn btn-outline-success py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirCamera">
         <span>📷</span> Tirar foto agora
       </button>
       
       <button class="btn btn-outline-secondary py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirGaleria">
-        <span>📁</span> Escolher da galeria
+        <span>📁</span> Escolher foto da galeria
+      </button>
+
+      <button class="btn btn-outline-info py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirVideoCamera">
+        <span>🎥</span> Gravar vídeo (máx. 30s)
+      </button>
+
+      <button class="btn btn-outline-dark py-3 fw-bold d-flex align-items-center justify-content-center gap-2" @click="abrirVideoGaleria">
+        <span>📁</span> Escolher vídeo da galeria
       </button>
     </div>
 
     <button 
       class="btn btn-success btn-lg w-100 py-3 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2"
-      :class="{ 'disabled': !fotoArquivo }"
       @click="enviar"
     >
       Enviar Ocorrência <span class="fs-5">➔</span>
@@ -59,29 +69,55 @@ const emit = defineEmits(['proximo'])
 
 const inputCamera = ref(null)
 const inputGaleria = ref(null)
-const fotoArquivo = ref(null)
-const imagemPreview = ref(null)
+const inputVideoCamera = ref(null)
+const inputVideoGaleria = ref(null)
+const mediaArquivo = ref(null)
+const mediaPreview = ref(null)
+const mediaType = ref(null)
 
 const abrirCamera = () => inputCamera.value.click()
 const abrirGaleria = () => inputGaleria.value.click()
+const abrirVideoCamera = () => inputVideoCamera.value.click()
+const abrirVideoGaleria = () => inputVideoGaleria.value.click()
 
 const manipularArquivo = (event) => {
   const arquivo = event.target.files[0]
   if (arquivo) {
-    fotoArquivo.value = arquivo
-    imagemPreview.value = URL.createObjectURL(arquivo)
+    // Validate video duration (max 30 seconds)
+    if (arquivo.type.startsWith('video/')) {
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src)
+        if (video.duration > 30) {
+          alert('O vídeo deve ter no máximo 30 segundos.')
+          return
+        }
+        mediaArquivo.value = arquivo
+        mediaType.value = 'video'
+        mediaPreview.value = URL.createObjectURL(arquivo)
+      }
+      video.src = URL.createObjectURL(arquivo)
+    } else {
+      mediaArquivo.value = arquivo
+      mediaType.value = 'image'
+      mediaPreview.value = URL.createObjectURL(arquivo)
+    }
   }
 }
 
-const removerFoto = () => {
-  fotoArquivo.value = null
-  imagemPreview.value = null
+const removerMedia = () => {
+  mediaArquivo.value = null
+  mediaPreview.value = null
+  mediaType.value = null
 }
 
 const enviar = () => {
-  if (fotoArquivo.value) {
-    emit('proximo', { foto: fotoArquivo.value })
-  }
+  // Media is now optional - can send without photo/video
+  emit('proximo', { 
+    media: mediaArquivo.value,
+    mediaType: mediaType.value
+  })
 }
 </script>
 

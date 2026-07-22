@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
+use App\Models\Classe;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class CategoriaController extends Controller
+class ClasseController extends Controller
 {
     public function __construct(private CloudinaryService $cloudinary) {}
 
     public function index()
     {
         return response()->json(
-            Categoria::withCount('especies')
+            Classe::withCount('especies')
                 ->orderBy('nome_popular')
                 ->get()
         );
@@ -22,7 +22,7 @@ class CategoriaController extends Controller
 
     public function show(int $id)
     {
-        $categoria = Categoria::with([
+        $classe = Classe::with([
             'especies' => function ($query) {
                 $query->orderBy('nome_popular');
             },
@@ -31,38 +31,38 @@ class CategoriaController extends Controller
                     ->whereNotNull('latitude')
                     ->whereNotNull('longitude');
             },
-        ])->where('id_categoria', $id)->first();
+        ])->where('id_classe', $id)->first();
 
-        if (! $categoria) {
-            return response()->json(['message' => 'Categoria não encontrada'], 404);
+        if (! $classe) {
+            return response()->json(['message' => 'Classe não encontrada'], 404);
         }
 
-        return response()->json($categoria);
+        return response()->json($classe);
     }
 
     public function store(Request $request)
     {
         $dados = $request->validate([
-            'nome_cientifico' => ['required', 'string', 'max:255', 'unique:categorias,nome_cientifico'],
+            'nome_cientifico' => ['required', 'string', 'max:255', 'unique:classes,nome_cientifico'],
             'nome_popular' => ['required', 'string', 'max:255'],
             'foto' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:5120'],
         ]);
 
         if ($request->hasFile('foto')) {
-            $dados['foto'] = $this->cloudinary->upload($request->file('foto'), 'categorias');
+            $dados['foto'] = $this->cloudinary->upload($request->file('foto'), 'classes');
         }
 
-        $categoria = Categoria::create($dados);
+        $classe = Classe::create($dados);
 
-        return response()->json($categoria->loadCount('especies'), 201);
+        return response()->json($classe->loadCount('especies'), 201);
     }
 
     public function update(Request $request, int $id)
     {
-        $categoria = Categoria::where('id_categoria', $id)->first();
+        $classe = Classe::where('id_classe', $id)->first();
 
-        if (! $categoria) {
-            return response()->json(['message' => 'Categoria não encontrada'], 404);
+        if (! $classe) {
+            return response()->json(['message' => 'Classe não encontrada'], 404);
         }
 
         $dados = $request->validate([
@@ -70,33 +70,33 @@ class CategoriaController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categorias', 'nome_cientifico')->ignore($id, 'id_categoria'),
+                Rule::unique('classes', 'nome_cientifico')->ignore($id, 'id_classe'),
             ],
             'nome_popular' => ['required', 'string', 'max:255'],
             'foto' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:5120'],
         ]);
 
         if ($request->hasFile('foto')) {
-            $this->cloudinary->deleteByUrl($categoria->getRawOriginal('foto'));
-            $dados['foto'] = $this->cloudinary->upload($request->file('foto'), 'categorias');
+            $this->cloudinary->deleteByUrl($classe->getRawOriginal('foto'));
+            $dados['foto'] = $this->cloudinary->upload($request->file('foto'), 'classes');
         }
 
-        $categoria->update($dados);
+        $classe->update($dados);
 
-        return response()->json($categoria->fresh()->loadCount('especies'));
+        return response()->json($classe->fresh()->loadCount('especies'));
     }
 
     public function destroy(int $id)
     {
-        $categoria = Categoria::where('id_categoria', $id)->first();
+        $classe = Classe::where('id_classe', $id)->first();
 
-        if (! $categoria) {
-            return response()->json(['message' => 'Categoria não encontrada'], 404);
+        if (! $classe) {
+            return response()->json(['message' => 'Classe não encontrada'], 404);
         }
 
-        $this->cloudinary->deleteByUrl($categoria->getRawOriginal('foto'));
-        $categoria->delete();
+        $this->cloudinary->deleteByUrl($classe->getRawOriginal('foto'));
+        $classe->delete();
 
-        return response()->json(['message' => 'Categoria excluída com sucesso']);
+        return response()->json(['message' => 'Classe excluída com sucesso']);
     }
 }
