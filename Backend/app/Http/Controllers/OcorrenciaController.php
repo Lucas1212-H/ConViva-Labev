@@ -44,9 +44,13 @@ class OcorrenciaController extends Controller
                     $fotoPath = $this->cloudinary->upload($mediaFile, 'ocorrencias');
                 }
             } catch (\Exception $e) {
-                return response()->json([
-                    'error' => 'Erro ao fazer upload da mídia: ' . $e->getMessage()
-                ], 500);
+                // Log do erro mas não falha a criação da ocorrência
+                \Log::error('Erro no upload de mídia (ocorrência criada sem mídia): ' . $e->getMessage(), [
+                    'file' => $mediaFile->getClientOriginalName(),
+                    'type' => $mediaType,
+                    'error' => $e->getMessage()
+                ]);
+                // Continua sem mídia - a ocorrência será salva mesmo assim
             }
         }
 

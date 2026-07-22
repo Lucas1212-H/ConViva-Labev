@@ -10,7 +10,16 @@
       <div class="modal-body-custom">
         <div class="row g-4">
           <div class="col-lg-6">
+            <div v-if="isVideo(denuncia?.imagem || denuncia?.foto)" class="media-container">
+              <video
+                :src="resolveStorageUrl(denuncia?.imagem || denuncia?.foto)"
+                class="img-fluid rounded-3 border"
+                controls
+                alt="Vídeo da denúncia"
+              ></video>
+            </div>
             <img
+              v-else
               :src="resolveStorageUrl(denuncia?.imagem || denuncia?.foto, FALLBACK_IMAGE)"
               class="img-fluid rounded-3 border"
               alt="Foto da denúncia"
@@ -123,6 +132,14 @@ const getStatusClass = (status) => {
   if (status === 'Preso') return 'status-info'
   return 'status-default'
 }
+
+const isVideo = (url) => {
+  if (!url) return false
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+  return videoExtensions.some(ext => url.toLowerCase().includes(ext)) || 
+         url.toLowerCase().includes('video') ||
+         url.toLowerCase().includes('cloudinary') && url.toLowerCase().includes('video')
+}
 </script>
 
 <style scoped>
@@ -226,6 +243,18 @@ const getStatusClass = (status) => {
 .status-default {
   background: #e9eef4;
   color: #3f5065;
+}
+
+.media-container {
+  position: relative;
+  width: 100%;
+}
+
+.media-container video {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  background: #000;
 }
 
 .actions-stack {
