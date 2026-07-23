@@ -128,8 +128,11 @@ class ImportCsvOcorrencias extends Command
                         'tipo_animal' => substr(trim($nomePopular) ?: trim($especie), 0, 255) ?: 'Desconhecido',
                         'situacao_animal' => $situacaoAnimal,
                         'descricao_ocorrencia' => substr(trim($observacoes), 0, 255) ?: 'Importado via CSV',
-                        'latitude' => is_numeric(trim($latitude)) ? trim($latitude) : null,
-                        'longitude' => is_numeric(trim($longitude)) ? trim($longitude) : null,
+                        
+                        // --- ALTERAÇÃO AQUI: Se não for numérico/estiver nulo, envia '0' para não quebrar o MySQL ---
+                        'latitude' => is_numeric(trim($latitude)) ? trim($latitude) : '0',
+                        'longitude' => is_numeric(trim($longitude)) ? trim($longitude) : '0',
+                        
                         'ponto_referencia' => substr(trim($localEncontro), 0, 255) ?: 'Não informado',
                         'descricao_local_exato' => substr(trim($localEncontro), 0, 255),
                         'status' => 'Resolvido',
