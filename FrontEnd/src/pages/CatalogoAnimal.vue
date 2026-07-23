@@ -215,6 +215,14 @@
                   </option>
                 </select>
               </div>
+              <div class="col-md-6">
+                <label class="form-label">Ordem</label>
+                <input type="text" class="form-control" v-model="formEditarEspecie.ordem" placeholder="Ex: Carnivora">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Família</label>
+                <input type="text" class="form-control" v-model="formEditarEspecie.familia" placeholder="Ex: Felidae">
+              </div>
               <div class="col-12">
                 <label class="form-label">Descrição</label>
                 <textarea class="form-control" v-model="formEditarEspecie.descricao" rows="3"></textarea>
@@ -261,6 +269,14 @@
             <div class="mb-3">
               <label class="form-label">Descrição</label>
               <textarea class="form-control" v-model="formEspecie.descricao" rows="3" placeholder="Ex: Descrição da espécie..."></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ordem</label>
+              <input type="text" class="form-control" v-model="formEspecie.ordem" placeholder="Ex: Carnivora">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Família</label>
+              <input type="text" class="form-control" v-model="formEspecie.familia" placeholder="Ex: Felidae">
             </div>
 
             <hr>
@@ -355,13 +371,17 @@ export default {
         nome_cientifico: '',
         nome_popular: '',
         descricao: '',
-        foto: null
+        foto: null,
+        ordem: '',
+        familia: ''
       },
       formEspecie: {
         nome_cientifico: '',
         nome_popular: '',
         foto: null,
-        descricao: ''
+        descricao: '',
+        ordem: '',
+        familia: ''
       }
     }
   },
@@ -510,6 +530,8 @@ export default {
       this.formEditarEspecie.nome_cientifico = especie.nome_cientifico;
       this.formEditarEspecie.nome_popular = especie.nome_popular;
       this.formEditarEspecie.descricao = especie.descricao || '';
+      this.formEditarEspecie.ordem = especie.ordem || '';
+      this.formEditarEspecie.familia = especie.familia || '';
       this.formEditarEspecie.foto = null;
       this.modalEditarEspecie = true;
     },
@@ -529,6 +551,8 @@ export default {
         formData.append('nome_cientifico', this.formEditarEspecie.nome_cientifico);
         formData.append('nome_popular', this.formEditarEspecie.nome_popular);
         formData.append('descricao', this.formEditarEspecie.descricao || '');
+        formData.append('ordem', this.formEditarEspecie.ordem || '');
+        formData.append('familia', this.formEditarEspecie.familia || '');
 
         if (this.formEditarEspecie.foto) {
           formData.append('foto', this.formEditarEspecie.foto);
@@ -545,7 +569,9 @@ export default {
           nome_cientifico: '',
           nome_popular: '',
           descricao: '',
-          foto: null
+          foto: null,
+          ordem: '',
+          familia: ''
         };
 
         if (this.classeSelecionada) {
@@ -595,6 +621,8 @@ export default {
         formData.append('nome_cientifico', this.formEspecie.nome_cientifico);
         formData.append('nome_popular', this.formEspecie.nome_popular);
         formData.append('descricao', this.formEspecie.descricao);
+        formData.append('ordem', this.formEspecie.ordem || '');
+        formData.append('familia', this.formEspecie.familia || '');
         if (this.formEspecie.foto) { formData.append('foto', this.formEspecie.foto); }
         
         const responseCriacao = await axios.post(`${API_BASE_URL}/api/especies`, formData, {
@@ -609,7 +637,7 @@ export default {
           });
         }
         
-        this.formEspecie = { nome_cientifico: '', nome_popular: '', foto: null, descricao: '' };
+        this.formEspecie = { nome_cientifico: '', nome_popular: '', foto: null, descricao: '', ordem: '', familia: '' };
         this.ocorrenciasSelecionadas = [];
         this.modalNovaEspecie = false;
         
