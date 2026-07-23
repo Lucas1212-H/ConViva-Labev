@@ -16,8 +16,8 @@ class EspecieController extends Controller
     {
         $query = Especie::with([
             'classe:id_classe,nome_popular,nome_cientifico,foto',
-            'ordem:id_ordem,nome_popular,nome_cientifico',
-            'familia:id_familia,nome_popular,nome_cientifico'
+            'ordemRel:id_ordem,nome_popular,nome_cientifico',
+            'familiaRel:id_familia,nome_popular,nome_cientifico'
         ])->orderBy('nome_popular');
 
         if ($request->filled('id_classe')) {
@@ -47,15 +47,15 @@ class EspecieController extends Controller
 
         $especie = Especie::create($dados);
 
-        return response()->json($especie->load(['classe', 'ordem', 'familia']), 201);
+        return response()->json($especie->load(['classe', 'ordemRel', 'familiaRel']), 201);
     }
 
     public function show(int $id)
     {
         $especie = Especie::with([
             'classe:id_classe,nome_popular,nome_cientifico,foto',
-            'ordem:id_ordem,nome_popular,nome_cientifico',
-            'familia:id_familia,nome_popular,nome_cientifico',
+            'ordemRel:id_ordem,nome_popular,nome_cientifico',
+            'familiaRel:id_familia,nome_popular,nome_cientifico',
             'ocorrencias' => function ($query) {
                 $query->select('id', 'especie_id', 'latitude', 'longitude', 'situacao_animal', 'ponto_referencia', 'created_at')
                     ->whereNotNull('latitude')
@@ -104,7 +104,7 @@ class EspecieController extends Controller
 
         $especie->update($dados);
 
-        return response()->json($especie->fresh()->load(['classe', 'ordem', 'familia']));
+        return response()->json($especie->fresh()->load(['classe', 'ordemRel', 'familiaRel']));
     }
 
     public function destroy(int $id)

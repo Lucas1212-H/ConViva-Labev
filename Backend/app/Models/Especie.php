@@ -31,12 +31,12 @@ class Especie extends Model
         return $this->belongsTo(Classe::class, 'id_classe', 'id_classe');
     }
 
-    public function ordem(): BelongsTo
+    public function ordemRel(): BelongsTo
     {
         return $this->belongsTo(Ordem::class, 'id_ordem', 'id_ordem');
     }
 
-    public function familia(): BelongsTo
+    public function familiaRel(): BelongsTo
     {
         return $this->belongsTo(Familia::class, 'id_familia', 'id_familia');
     }

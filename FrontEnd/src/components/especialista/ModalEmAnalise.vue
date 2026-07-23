@@ -215,8 +215,8 @@ const preencherClassificacaoAutomatica = () => {
   
   if (especieSelecionada) {
     formData.value.classe = especieSelecionada.classe?.nome_cientifico || ''
-    formData.value.ordem = especieSelecionada.ordem || ''
-    formData.value.familia = especieSelecionada.familia || ''
+    formData.value.ordem = especieSelecionada.ordem || especieSelecionada.ordem_rel?.nome_cientifico || especieSelecionada.ordem_rel?.nome_popular || ''
+    formData.value.familia = especieSelecionada.familia || especieSelecionada.familia_rel?.nome_cientifico || especieSelecionada.familia_rel?.nome_popular || ''
     formData.value.especie = especieSelecionada.nome_cientifico || ''
   }
 }
