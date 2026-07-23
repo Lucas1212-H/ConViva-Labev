@@ -209,7 +209,7 @@
             <div class="p-4 p-md-5 bg-white border rounded-0 shadow-sm">
               <h3 class="h4 fw-bold text-dark text-uppercase tracking-wide mb-4 border-bottom pb-2">Vínculo e Coordenação</h3>
               <div class="d-flex align-items-start gap-3 mb-4">
-                <div class="bg-light border text-center fw-bold d-flex align-items-center justify-content-center text-secondary rounded-0" style="width: 60px; height: 60px; min-width: 60px;">LAB</div>
+                <div class="bg-light border text-center fw-bold d-flex align-items-center justify-content-center text-secondary rounded-0" style="width: 60px; height: 60px; min-width: 60px;"><img src="../assets/images/prof_kita_01.jpeg" alt="Foto de Perfil — Profa. Dra. Kita" srcset=""></div>
                 <div>
                   <h4 class="h6 fw-bold m-0 text-dark text-uppercase">Coordenação Geral</h4>
                   <p class="text-secondary small mb-1">Profª. Drª. Maria Cristina dos Santos Costa</p>
@@ -217,7 +217,7 @@
                 </div>
               </div>
               <div class="d-flex align-items-start gap-3 mb-4">
-                <div class="bg-light border text-center fw-bold d-flex align-items-center justify-content-center text-secondary rounded-0" style="width: 60px; height: 60px; min-width: 60px;">ICB</div>
+                <div class="bg-light border text-center fw-bold d-flex align-items-center justify-content-center text-secondary rounded-0" style="width: 60px; height: 60px; min-width: 60px;"><img src="../assets/images/logo_icb.jpg" alt="Logo do ICB" srcset=""></div>
                 <div>
                   <h4 class="h6 fw-bold m-0 text-dark text-uppercase">Instituto de Vínculo</h4>
                   <p class="text-secondary small mb-1">Instituto de Ciências Biológicas (ICB)</p>
