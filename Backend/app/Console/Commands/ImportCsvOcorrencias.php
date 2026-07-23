@@ -31,8 +31,8 @@ class ImportCsvOcorrencias extends Command
         
         if (empty($files)) {
             $files = [
-                storage_path('app/ocorrencias2025.csv'),
-                storage_path('app/ocorrencias2026.csv')
+                database_path('data/ocorrencias2025.csv'),
+                database_path('data/ocorrencias2026.csv')
             ];
         }
 
