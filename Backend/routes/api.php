@@ -137,3 +137,19 @@ Route::get('/configurar-producao', function () {
         ], 500);
     }
 });
+
+Route::get('/importar-csv', function () {
+    try {
+        Artisan::call('ocorrencias:import');
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Importação finalizada com sucesso!',
+            'logs' => Artisan::output()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'sucesso' => false,
+            'erro' => $e->getMessage(),
+        ], 500);
+    }
+});
