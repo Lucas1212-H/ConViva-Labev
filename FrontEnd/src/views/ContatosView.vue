@@ -59,14 +59,14 @@
             <section class="card border rounded-0 shadow-sm bg-white overflow-hidden">
               <div class="row g-0 align-items-center">
                 <div class="col-sm-4 bg-light border-end d-flex align-items-center justify-content-center overflow-hidden h-100" style="min-height: 140px;">
-                  <img src="../assets/images/perfil2.jpg" alt="Foto de Perfil — Profa. Dra. Kita" class="w-100 h-100" style="object-fit: cover;" />
+                  <img src="../assets/images/prof_kita_01.jpeg" alt="Foto de Perfil — Profa. Dra. Kita" class="w-100 h-100" style="object-fit: cover;" />
                 </div>
                 <div class="col-sm-8">
                   <div class="card-body p-3">
                     <span class="badge rounded-0 bg-success text-uppercase mb-1 small">Fundadora</span>
                     <h3 class="h6 fw-bold text-dark m-0 text-uppercase">Profa. Dra. Kita</h3>
                     <p class="text-muted small m-0 mt-2 lh-sm">
-                      Contato institucional, parcerias científicas, e-mail acadêmico e redes de monitoramento biológico do campus.
+                      Bióloga, pesquisadora, professora e extensionista comprometida com a ciência, a educação e a inclusão social. Professora Titular da UFPA. Coordena o Projeto ConViva, que promove a coexistência entre a fauna silvestre e a comunidade universitária por meio da educação ambiental, divulgação científica e popularização da ciência.
                     </p>
                   </div>
                 </div>
@@ -76,14 +76,31 @@
             <section class="card border rounded-0 shadow-sm bg-white overflow-hidden">
               <div class="row g-0 align-items-center">
                 <div class="col-sm-4 bg-light border-end d-flex align-items-center justify-content-center overflow-hidden h-100" style="min-height: 140px;">
-                  <img src="../assets/images/perfil2.jpg" alt="Foto de Perfil — Prof. Dr. André Nunes" class="w-100 h-100" style="object-fit: cover;" />
+                  <img src="../assets/images/prof_gleomar.jpeg" alt="Foto de Perfil — Prof. Dr. Gleomar Fabiano Maschio" class="w-100 h-100" style="object-fit: cover;" />
                 </div>
                 <div class="col-sm-8">
                   <div class="card-body p-3">
-                    <span class="badge rounded-0 bg-dark text-white text-uppercase mb-1 small">Coordenador</span>
-                    <h3 class="h6 fw-bold text-dark m-0 text-uppercase">Prof. Dr. André Nunes</h3>
+                    <span class="badge rounded-0 bg-dark text-white text-uppercase mb-1 small">Pesquisador</span>
+                    <h3 class="h6 fw-bold text-dark m-0 text-uppercase">Prof. Dr. Gleomar Fabiano Maschio</h3>
                     <p class="text-muted small m-0 mt-2 lh-sm">
-                      Manejo técnico de ecologia, supervisão do LABEV, dados estatísticos de fauna silvestre e mapeamento espacial.
+                     Biólogo, pesquisador e educador dedicado ao estudo da fauna amazônica. Professor Associado do Instituto de Ciências Biológicas da UFPA. Sua trajetória é marcada pela atuação em Zoologia, especialmente na Herpetologia, investigando a diversidade, o comportamento e a ecologia das serpentes amazônicas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card border rounded-0 shadow-sm bg-white overflow-hidden">
+              <div class="row g-0 align-items-center">
+                <div class="col-sm-4 bg-light border-end d-flex align-items-center justify-content-center overflow-hidden h-100" style="min-height: 140px;">
+                  <img src="../assets/images/prof_ana_cris.jpeg" alt="Foto de Perfil — Profa. Dr. Ana Cristina Mendes de Oliveira" class="w-100 h-100" style="object-fit: cover;" />
+                </div>
+                <div class="col-sm-8">
+                  <div class="card-body p-3">
+                    <span class="badge rounded-0 bg-dark text-white text-uppercase mb-1 small">Pesquisadora</span>
+                    <h3 class="h6 fw-bold text-dark m-0 text-uppercase">Profa. Dr. Ana Cristina Mendes de Oliveira</h3>
+                    <p class="text-muted small m-0 mt-2 lh-sm">
+                     Bióloga, pesquisadora, professora e extensionista comprometida com a ciência, a educação e a inclusão social. Professora Titular da UFPA. Coordena o Projeto ConViva, que promove a coexistência entre a fauna silvestre e a comunidade universitária por meio da educação ambiental, divulgação científica e popularização da ciência.
                     </p>
                   </div>
                 </div>
