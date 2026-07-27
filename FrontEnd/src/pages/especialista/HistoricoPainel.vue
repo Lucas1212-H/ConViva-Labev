@@ -214,15 +214,42 @@ const arquivadasFiltradas = computed(() => {
 
 const exportarCsv = () => {
   const linhas = arquivadasFiltradas.value.map((item) => [
-    item.animal,
-    item.denunciante,
-    item.processoFinal,
-    item.data,
-    item.publicadoNoMapa ? 'Publicado no mapa' : item.statusFinal,
-    item.publicadoNoMapa ? 'Sim' : 'Não'
+    `LABEV${String(item.id).padStart(2, '0')}`,
+    item.classe || '',
+    item.ordem || '',
+    item.familia || '',
+    item.especie || '',
+    item.animal || item.nomePopular || '',
+    item.data || '',
+    item.horario || '',
+    item.tempo || '',
+    item.campus || item.setor || '',
+    item.local || '',
+    item.pontoGeoreferencial || '',
+    item.latitude || '',
+    item.longitude || '',
+    item.habitat || '',
+    item.microhabitat || '',
+    item.statusAnimal || '',
+    item.classeEtaria || '',
+    item.colaborador || item.denunciante || '',
+    item.instagram || '',
+    item.coletor || '',
+    item.destino || '',
+    item.comoContatou || '',
+    item.registradoPor || '',
+    item.foto || '',
+    item.filme || '',
+    item.observacao || ''
   ])
 
-  const cabecalho = ['Animal', 'Denunciante', 'Processo', 'Data', 'Status', 'No mapa']
+  const cabecalho = [
+    'Número de registro', 'Classe', 'Ordem', 'Família', 'Espécie', 'Nome popular',
+    'Data de encontro', 'Horário', 'Tempo', 'Campus/Setor', 'Local de encontro',
+    'Ponto georeferencial', 'Latitude', 'Logitude', 'Hábitat', 'Microhabitat',
+    'Status do animal', 'Classe etária', 'Colaborador', '@ do Instagram', 'Coletor',
+    'Destino', 'Como nos contatou?', 'Registrado por:', 'Foto', 'Filme', 'Observação'
+  ]
   const csv = [cabecalho, ...linhas]
     .map((linha) => linha.map((celula) => `"${String(celula ?? '').replace(/"/g, '""')}"`).join(';'))
     .join('\r\n')

@@ -15,7 +15,7 @@ WORKDIR /app
 # Instala dependências do sistema, extensões PHP e o Python3
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       libzip-dev zip unzip libpng-dev libonig-dev libxml2-dev git curl python3 \
+       libzip-dev zip unzip libpng-dev libonig-dev libxml2-dev git curl python3 default-mysql-client \
     && docker-php-ext-install pdo pdo_mysql mbstring zip exif bcmath pcntl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
